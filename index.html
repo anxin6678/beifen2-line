@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
+    <title>LINE Call & Chat</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/mqtt/4.2.8/mqtt.min.js"></script>
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.22.0.js"></script>
+    
+    <style>
+        :root {
+            --line-green: #06C755;
+            --line-green-hover: #05b04b;
+            --line-bg: #8b9bb4; /* LINE经典蓝灰聊天背景 */
+            --bubble-self: #A9E976; /* LINE自发气泡绿 */
+            --bubble-other: #ffffff;
+            --text-main: #111111;
+            --text-sub: #666666;
+            --border-color: #e5e5e5;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", Arial, sans-serif; 
+            background-color: #f4f4f4; color: var(--text-main); 
+            height: 100dvh; display: flex; justify-content: center; align-items: center; overflow: hidden; 
+            -webkit-user-select: none; user-select: none; 
+        }
+        input, textarea { -webkit-user-select: text; user-select: text; }
+        
+        /* 1. LINE 风格登录卡片 */
+        .login-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #ffffff; z-index: 9999; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; 
+        }
+        .login-box { 
+            width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 24px; align-items: center;
+        }
+        .line-logo {
+            width: 80px; height: 80px; background: var(--line-green); border-radius: 22px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 26px; color: #fff; font-weight: 900; letter-spacing: -1px;
+            box-shadow: 0 8px 16px rgba(6, 199, 85, 0.25);
+        }
+        .login-box h2 { font-size: 20px; color: var(--text-main); font-weight: 600; margin-top: -5px; }
+        
+        .avatar-upload-area { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .preview-avatar-wrap {
+            width: 80px; height: 80px; border-radius: 50%; border: 1px solid var(--border-color);
+            display: flex; justify-content: center; align-items: center; overflow: hidden; background: #f8f8f8;
+            position: relative; cursor: pointer;
+        }
+        .preview-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .preview-avatar-wrap svg { width: 40px; height: 40px; fill: #b2b2b2; }
+        .upload-hint { font-size: 12px; color: var(--text-sub); }
+        
+        .nickname-input { 
+            width: 100%; background: #f8f8f8; border: 1px solid var(--border-color); 
+            padding: 14px; border-radius: 8px; color: var(--text-main); font-size: 15px; outline: none; text-align: center; 
+        }
+        .nickname-input:focus { border-color: var(--line-green); background: #fff; }
+        
+        .enter-btn { 
+            width: 100%; background: var(--line-green); color: white; border: none; 
+            padding: 14px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; 
+            transition: background 0.2s;
+        }
+        .enter-btn:hover { background: var(--line-green-hover); }
+
+        /* 2. 主页面容器 (经典手机面板视口) */
+        .room-container { 
+            width: 100%; height: 100dvh; background: var(--line-bg);
+            display: flex; flex-direction: column; position: relative; overflow: hidden; 
+        }
+        
+        @media (min-width: 768px) { 
+            .room-container { 
+                width: 420px; height: 850px; border-radius: 12px; 
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); border: 1px solid #d0d0d0;
+            } 
+        }
+        
+        /* LINE 极简头部 */
+        .room-header { 
+            padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; 
+            background: #ffffff; border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 10;
+        }
+        .room-title h3 { font-size: 16px; font-weight: 600; color: var(--text-main); }
+        .room-title p { font-size: 11px; color: var(--text-sub); margin-top: 1px; }
+        
+        .leave-btn {
+            background: transparent; border: none; color: #ff3b30; font-size: 14px; font-weight: 500; cursor: pointer;
+        }
+
+        /* 3. LINE 标志性多人语音通话浮窗面板 */
+        .line-call-panel {
+            background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px);
+            padding: 12px; display: flex; flex-direction: column; gap: 10px;
+            border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 9;
+        }
+        .call-panel-header {
+            display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-sub); padding: 0 4px;
+        }
+        .call-users-grid {
+            display: flex; gap: 12px; overflow-x: auto; padding: 4px 0; scrollbar-width: none;
+        }
+        .call-users-grid::-webkit-scrollbar { display: none; }
+        
+        .call-user-item {
+            display: flex; flex-direction: column; align-items: center; position: relative; flex-shrink: 0;
+        }
+        .call-avatar-wrap {
+            width: 48px; height: 48px; border-radius: 50%; background: #e0e0e0;
+            position: relative; display: flex; justify-content: center; align-items: center;
+            border: 2px solid transparent; transition: all 0.2s;
+        }
+        .call-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .call-avatar-wrap svg { width: 28px; height: 28px; fill: #aaa; }
+        
+        /* 绿圈：LINE 经典正在说话发光动画 */
+        .call-user-item.speaking .call-avatar-wrap {
+            border-color: var(--line-green);
+            box-shadow: 0 0 8px rgba(6, 199, 85, 0.6);
+            transform: scale(1.04);
+        }
+        .call-user-name {
+            font-size: 10px; color: var(--text-main); margin-top: 5px;
+            max-width: 50px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+        }
+        .mic-status-badge {
+            position: absolute; bottom: 14px; right: -2px; background: #ff3b30;
+            color: #fff; font-size: 8px; width: 14px; height: 14px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; border: 1px solid #fff;
+        }
+        .mic-status-badge.open { background: var(--line-green); }
+
+        /* 房主全局禁言按钮（仅悬停或长按时展现效果） */
+        .admin-action-mask {
+            position: absolute; top: 0; left: 0; width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(255,59,48,0.85); color: white; font-size: 9px; font-weight: bold;
+            display: flex; justify-content: center; align-items: center; opacity: 0; cursor: pointer; transition: opacity 0.2s;
+        }
+        .call-user-item:hover .admin-action-mask { opacity: 1; }
+
+        /* 4. LINE 经典原生对话区 */
+        .chat-area { 
+            flex: 1; padding: 15px; overflow-y: auto; 
+            display: flex; flex-direction: column; gap: 14px; 
+            -webkit-overflow-scrolling: touch; 
+        }
+        
+        /* 系统级灰色消息提示 */
+        .msg-system { 
+            background: rgba(0, 0, 0, 0.15); color: #ffffff; 
+            align-self: center; font-size: 11px; padding: 4px 12px; border-radius: 12px;
+            max-width: 90%; text-align: center; line-height: 1.4;
+        }
+        
+        /* 标准气泡组合容器 */
+        .bubble-row { display: flex; gap: 8px; width: 100%; max-width: 85%; }
+        .bubble-row.self { align-self: flex-end; flex-direction: row-reverse; }
+        .bubble-row.other { align-self: flex-start; }
+        
+        .chat-avatar { width: 36px; height: 36px; border-radius: 50%; background: #fff; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); }
+        .chat-avatar-svg { width: 36px; height: 36px; background: #e0e0e0; border-radius: 50%; fill: #fff; flex-shrink: 0; }
+        
+        .bubble-content-wrap { display: flex; flex-direction: column; gap: 2px; }
+        .bubble-row.self .bubble-content-wrap { align-items: flex-end; }
+        
+        .bubble-user-name { font-size: 11px; color: rgba(255,255,255,0.8); margin-left: 2px; margin-bottom: 1px; }
+        .bubble-row.self .bubble-user-name { display: none; } /* 自己不显示名字 */
+        
+        /* 气泡本体 */
+        .line-bubble { 
+            padding: 9px 12px; border-radius: 16px; font-size: 14px; color: var(--text-main); 
+            line-height: 1.45; word-break: break-all; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+        }
+        .bubble-row.other .line-bubble { 
+            background: var(--bubble-other); border-top-left-radius: 4px; 
+        }
+        .bubble-row.self .line-bubble { 
+            background: var(--bubble-self); border-top-right-radius: 4px; 
+        }
+        
+        /* 气泡旁边的微小时间戳 */
+        .bubble-meta { font-size: 10px; color: rgba(255,255,255,0.7); align-self: flex-end; margin: 0 2px; white-space: nowrap; }
+        .bubble-row.self .bubble-meta { text-align: right; }
+
+        .chat-img { max-width: 160px; max-height: 160px; border-radius: 8px; display: block; margin-top: 2px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        /* 5. LINE 底部多功能白底输入控制栏 */
+        .bottom-bar { 
+            padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); 
+            background: #ffffff; display: flex; align-items: center; gap: 12px; 
+            flex-shrink: 0; position: relative; z-index: 99; border-top: 1px solid var(--border-color);
+        }
+        
+        .bar-icon-btn { font-size: 22px; cursor: pointer; color: #777777; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; }
+        .bar-icon-btn:active { color: var(--line-green); }
+        
+        .line-input-box { 
+            flex: 1; background: #f5f5f5; border: 1px solid #e8e8e8; 
+            padding: 9px 14px; border-radius: 20px; color: var(--text-main); font-size: 14px; outline: none; 
+        }
+        .line-input-box:focus { background: #ffffff; border-color: var(--line-green); }
+        
+        /* LINE 电话控制悬浮按钮 */
+        .line-call-toggle {
+            width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0;
+            display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: all 0.2s;
+        }
+        .line-call-toggle.active {
+            background: #ff3b30; color: #fff; box-shadow: 0 0 8px rgba(255,59,48,0.4);
+        }
+        .line-call-toggle.talking {
+            background: var(--line-green); color: #fff; box-shadow: 0 0 8px rgba(6, 199, 85, 0.4);
+        }
+
+        /* 表情滑动选择托盘 */
+        .emoji-tray {
+            background: #ffffff; padding: 10px 15px; display: flex; gap: 16px; overflow-x: auto;
+            border-top: 1px solid var(--border-color); flex-shrink: 0; scrollbar-width: none; display: none;
+        }
+        .emoji-tray::-webkit-scrollbar { display: none; }
+        .tray-emoji-item { font-size: 22px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <div class="line-logo">LINE</div>
+        <h2>建立你的 LINE 语音账户</h2>
+        
+        <div class="avatar-upload-area">
+            <div class="preview-avatar-wrap" onclick="document.getElementById('avatarFileInput').click()" id="avatarPreview">
+                <svg viewBox="0 0 1024 1024"><path d="M512 512c141.4 0 256-114.6 256-256S653.4 0 512 0 256 114.6 256 256s114.6 256 256 256zM512 614.4c-243.2 0-512 121.6-512 364.8v44.8h1024v-44.8c0-243.2-268.8-364.8-512-364.8z"/></svg>
+            </div>
+            <span class="upload-hint">设置自定义头像</span>
+            <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="handleAvatarUpload(this)">
+        </div>
+
+        <input type="text" class="nickname-input" id="nicknameInput" placeholder="输入您的群聊网名 (支持中文)" maxlength="12">
+        
+        <div style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-sub);">
+            <input type="checkbox" id="isHostMode" style="accent-color: var(--line-green); width:15px; height:15px;">
+            <label l for="isHostMode">申请成为该房间的最高管理员(房主)</label>
+        </div>
+
+        <button class="enter-btn" onclick="initializeLineEnvironment()">连接进入聊天室</button>
+    </div>
+</div>
+
+<div class="room-container">
+    <div class="room-header">
+        <div class="room-title">
+            <h3 id="lineTitle">LINE 群组聊天大厅</h3>
+            <p>实时音视频合流信道就绪</p>
+        </div>
+        <button class="leave-btn" onclick="leaveRoom()">退出</button>
+    </div>
+
+    <div class="line-call-panel">
+        <div class="call-panel-header">
+            <span>📞 群组通话人员状态监视器</span>
+            <span style="color:var(--line-green); font-weight:bold;">● 实时混音中</span>
+        </div>
+        <div class="call-users-grid" id="callUsersGrid">
+            </div>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+        <div class="msg-system">欢迎加入 LINE 极简通讯房。已挂载声网 4.22 商业级高保真全双工核心。点击底部电话图标上麦语音。</div>
+    </div>
+
+    <div class="emoji-tray" id="emojiTray">
+        <span class="tray-emoji-item" onclick="insertEmoji('😂')">😂</span>
+        <span class="tray-emoji-item" onclick="insertEmoji('👍')">👍</span>
+        <span class="tray-emoji-item" onclick="insertEmoji('🔥')">🔥</span>
+        <span class="tray-emoji-item" onclick="insertEmoji('❤️')">❤️</span>
+        <span class="tray-emoji-item" onclick="insertEmoji('🎉')">🎉</span>
+        <span class="tray-emoji-item" onclick="insertEmoji('😮')">😮</span>
+        <span class="tray-emoji-item" onclick="insertEmoji('🤔')">🤔</span>
+        <span class="tray-emoji-item" onclick="insertEmoji('👑')">👑</span>
+    </div>
+
+    <div class="bottom-bar">
+        <div class="bar-icon-btn" onclick="document.getElementById('chatImgInput').click()">📁</div>
+        <input type="file" id="chatImgInput" accept="image/*" style="display: none;" onchange="handleSendImage(this)">
+        
+        <div class="bar-icon-btn" onclick="toggleEmojiTray()">☺</div>
+        
+        <input type="text" class="input-box line-input-box" id="msgInput" placeholder="请输入消息..." autocomplete="off">
+        
+        <div class="line-call-toggle" id="callToggleBtn" onclick="toggleLineVoiceCall()">📞</div>
+    </div>
+</div>
+
+<script>
+    const DEFAULT_SVG_INNER = `<path d="M512 512c141.4 0 256-114.6 256-256S653.4 0 512 0 256 114.6 256 256s114.6 256 256 256zM512 614.4c-243.2 0-512 121.6-512 364.8v44.8h1024v-44.8c0-243.2-268.8-364.8-512-364.8z" fill="#b2b2b2"/>`;
+    
+    // 固定的项目配置
+    const AGORA_APP_ID = "3adf636b90314ac3901887e1560c0db5"; 
+    const CHANNEL_NAME = "line_premium_voice_999";
+
+    let mqttClient = null;
+    let agoraClient = null;
+    let localAudioTrack = null;
+
+    let myName = "";
+    let myAgoraUid = 0; 
+    let myAvatarBase64 = "";
+    let isCalling = false; // 是否加入了语音通话
+    let isAdminHost = false; // 是否是房主管理员
+    let roomUsers = {}; 
+
+    // 图像极限无损画布压缩算法 (适配公共MQTT大小包控流限制)
+    function compressImageBlob(file, maxBound, quality, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const tempImg = new Image();
+            tempImg.onload = function() {
+                const canvas = document.createElement('canvas');
+                let w = tempImg.width; let h = tempImg.height;
+                if (w > h) {
+                    if (w > maxBound) { h *= maxBound / w; w = maxBound; }
+                } else {
+                    if (h > maxBound) { w *= maxBound / h; h = maxBound; }
+                }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(tempImg, 0, 0, w, h);
+                callback(canvas.toDataURL('image/jpeg', quality));
+            }
+            tempImg.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+
+    function handleAvatarUpload(input) {
+        if(!input.files || !input.files[0]) return;
+        compressImageBlob(input.files[0], 120, 0.8, function(base64Output) {
+            myAvatarBase64 = base64Output;
+            document.getElementById('avatarPreview').innerHTML = `<img src="${base64Output}">`;
+        });
+    }
+
+    function handleSendImage(input) {
+        if(!input.files || !input.files[0]) return;
+        compressImageBlob(input.files[0], 280, 0.7, function(compressedBase64) {
+            publishLinePacket({ type: 'img', sender: myName, avatar: myAvatarBase64, payload: compressedBase64 });
+        });
+        input.value = '';
+    }
+
+    function toggleEmojiTray() {
+        const tray = document.getElementById('emojiTray');
+        tray.style.display = tray.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function insertEmoji(emoji) {
+        const input = document.getElementById('msgInput');
+        input.value += emoji; input.focus();
+    }
+
+    // 初始化运行入口
+    function initializeLineEnvironment() {
+        const inputName = document.getElementById('nicknameInput').value.trim();
+        if(!inputName) { alert("请输入群聊名字！"); return; }
+        myName = inputName;
+        isAdminHost = document.getElementById('isHostMode').checked;
+        
+        // 核心技术纠偏：生成合法的纯数字 ASCII UID，彻底避免中文网名导致声网 INVALID_PARAMS 报错卡死
+        myAgoraUid = Math.floor(Math.random() * 89999) + 10000;
+
+        document.getElementById('loginOverlay').style.display = 'none';
+
+        initMqttSyncGateway();
+        initAgoraAudioEngine();
+
+        // 绑定输入框和手机回车发送键动作
+        document.getElementById('msgInput').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') { sendMsg(); this.blur(); }
+        });
+    }
+
+    // 远端房主禁言裁决执行
+    function invokeAdminMuteKill(targetName) {
+        if(!isAdminHost) {
+            alert("操作失败：您当前不是房间的高阶管理员(房主)！");
+            return;
+        }
+        if(targetName === myName) return;
+        if(confirm(`【LINE管理员权限】确定要强制切断并关闭 [${targetName}] 的全网麦克风吗？`)) {
+            publishLinePacket({ type: 'admin_kill_mic', target: targetName });
+        }
+    }
+
+    // --- 🍏 LINE 风格极简数据网关同步层 ---
+    function initMqttSyncGateway() {
+        const brokerUrl = 'wss://broker.emqx.io:8084/mqtt'; 
+        mqttClient = mqtt.connect(brokerUrl, { connectTimeout: 5000, clientId: 'line_cl_' + Math.random().toString(16).substr(2, 7) });
+
+        mqttClient.on('connect', () => {
+            mqttClient.subscribe(CHANNEL_NAME);
+            // 进场握手：向全网宣告自己的中文网名、自定义头像及通信 UID
+            publishLinePacket({ type: 'handshake', user: myName, agoraUid: myAgoraUid, avatar: myAvatarBase64, calling: isCalling });
+        });
+
+        mqttClient.on('message', (topic, packet) => {
+            try {
+                const data = JSON.parse(packet.toString());
+                
+                if (data.type === 'handshake') {
+                    roomUsers[data.user] = { agoraUid: data.agoraUid, avatar: data.avatar, calling: data.calling };
+                    refreshCallPanelLayout();
+                    appendSystemNotice(`${data.user} 加入了群组聊天`);
+                    if(data.user !== myName) {
+                        publishLinePacket({ type: 'handshake_reply', user: myName, agoraUid: myAgoraUid, avatar: myAvatarBase64, calling: isCalling });
+                    }
+                } 
+                else if (data.type === 'handshake_reply') {
+                    roomUsers[data.user] = { agoraUid: data.agoraUid, avatar: data.avatar, calling: data.calling };
+                    refreshCallPanelLayout();
+                }
+                else if (data.type === 'chat') {
+                    appendLineBubble(data.sender, data.avatar, data.payload, false);
+                }
+                else if (data.type === 'img') {
+                    appendLineBubble(data.sender, data.avatar, data.payload, true);
+                }
+                else if (data.type === 'call_state') {
+                    if(roomUsers[data.user]) roomUsers[data.user].calling = data.calling;
+                    refreshCallPanelLayout();
+                }
+                // 被最高管理员降维打击禁言
+                else if (data.type === 'admin_kill_mic') {
+                    if(data.target === myName && isCalling) {
+                        alert("【LINE管理提示】你已被管理员强制断开连麦！");
+                        toggleLineVoiceCall(); // 自动下麦执行
+                    }
+                }
+                else if (data.type === 'leave') {
+                    delete roomUsers[data.user];
+                    refreshCallPanelLayout();
+                }
+            } catch (e) {}
+        });
+    }
+
+    // 重构高仿 LINE 群组通话正在进行中的头像矩阵列表
+    function refreshCallPanelLayout() {
+        const grid = document.getElementById('callUsersGrid');
+        grid.innerHTML = '';
+        const allOnlineUsers = Object.keys(roomUsers);
+        
+        allOnlineUsers.forEach(username => {
+            const uData = roomUsers[username];
+            const isUserInCall = uData.calling;
+            
+            // 构造头像形态
+            let avatarHtml = uData.avatar ? `<img src="${uData.avatar}">` : `<svg viewBox="0 0 1024 1024">${DEFAULT_SVG_INNER}</svg>`;
+            let micBadgeHtml = isUserInCall ? `<span class="mic-status-badge open">✓</span>` : `<span class="mic-status-badge">✕</span>`;
+
+            grid.innerHTML += `
+                <div class="call-user-item" id="call_uid_${uData.agoraUid}">
+                    <div class="admin-action-mask" onclick="invokeAdminMuteKill('${username}')">禁言</div>
+                    <div class="call-avatar-wrap">
+                        ${avatarHtml}
+                    </div>
+                    ${micBadgeHtml}
+                    <span class="call-user-name">${username}</span>
+                </div>
+            `;
+        });
+    }
+
+    // --- 🔊 声网商业级全平台高保真语音驱动引擎 ---
+    async function initAgoraAudioEngine() {
+        try {
+            agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+            // 监听全网连麦人员拉流动作
+            agoraClient.on("user-published", async (user, mediaType) => {
+                await agoraClient.subscribe(user, mediaType);
+                if (mediaType === "audio") {
+                    user.audioTrack.play(); // 强行拉通播放，免去iOS二次封堵拦截
+                }
+            });
+
+            // 智能音量波形分贝监测（用于对齐触发 LINE 经典的绿圈发光动画）
+            agoraClient.enableAudioVolumeIndicator();
+            agoraClient.on("volume-indicator", volumes => {
+                volumes.forEach(vol => {
+                    const targetGridItem = document.getElementById(`call_uid_${vol.uid}`);
+                    if(targetGridItem) {
+                        targetGridItem.classList.toggle('speaking', vol.level > 6);
+                    }
+                });
+            });
+
+        } catch (e) {
+            alert("声网引擎装载失败，请检查是否处于 HTTPS 安全域名链条下！");
+        }
+    }
+
+    // 点击 LINE 标志性电话控制上麦动作
+    async function toggleLineVoiceCall() {
+        if(!agoraClient) { alert("语音链路未启动"); return; }
+        const btn = document.getElementById('callToggleBtn');
+
+        if(!isCalling) {
+            // 执行加入通话动作
+            try {
+                btn.innerText = "⏳";
+                // 加入声网语音群组房间
+                await agoraClient.join(AGORA_APP_ID, CHANNEL_NAME, null, myAgoraUid);
+                
+                // 启动本地硬件音频采集轨道，注入高级噪声控制及回声降噪
+                localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ AEC: true, ANS: true, AGC: true });
+                await agoraClient.publish([localAudioTrack]);
+
+                isCalling = true;
+                btn.innerText = "挂断";
+                btn.className = "line-call-toggle active"; // 红色状态
+                appendSystemNotice("你已成功接入 LINE 多人互连语音通话流");
+
+            } catch (err) {
+                isCalling = false;
+                btn.innerText = "📞";
+                btn.className = "line-call-toggle";
+                alert("连麦通话失败！请务必检查系统麦克风录音权限是否已放行。");
+                return;
+            }
+        } else {
+            // 执行断开下麦动作
+            if(localAudioTrack) {
+                localAudioTrack.getTracks().forEach(track => track.stop());
+                localAudioTrack = null;
+            }
+            await agoraClient.leave();
+            isCalling = false;
+            btn.innerText = "📞";
+            btn.className = "line-call-toggle";
+            appendSystemNotice("你已挂断并退出了当前的语音通话");
+        }
+
+        // 全网数据广播同步自己的通话状态
+        publishLinePacket({ type: 'call_state', user: myName, calling: isCalling });
+    }
+
+    function sendMsg() {
+        const input = document.getElementById('msgInput');
+        const text = input.value.trim();
+        if(!text) return;
+        publishLinePacket({ type: 'chat', sender: myName, avatar: myAvatarBase64, payload: text });
+        input.value = '';
+    }
+
+    function publishLinePacket(obj) {
+        if(mqttClient && mqttClient.connected) {
+            mqttClient.publish(CHANNEL_NAME, JSON.stringify(obj), { qos: 0 });
+        }
+    }
+
+    // 像素级高度重绘 LINE 清新风对话框及气泡
+    function appendLineBubble(sender, avatarB64, content, isImg) {
+        const chatArea = document.getElementById('chatArea');
+        const isSelf = sender === myName;
+        
+        const row = document.createElement('div');
+        row.className = `bubble-row ${isSelf ? 'self' : 'other'}`;
+
+        // 1. 头像组件渲染
+        if(!isSelf) {
+            if(avatarB64) {
+                row.innerHTML += `<img class="chat-avatar" src="${avatarB64}">`;
+            } else {
+                row.innerHTML += `<svg class="chat-avatar-svg" viewBox="0 0 1024 1024">${DEFAULT_SVG_INNER}</svg>`;
+            }
+        }
+
+        // 2. 气泡及元数据组合体
+        const contentWrap = document.createElement('div');
+        contentWrap.className = 'bubble-content-wrap';
+        if(!isSelf) {
+            contentWrap.innerHTML += `<span class="bubble-user-name">${sender}</span>`;
+        }
+
+        const bubbleMain = document.createElement('div');
+        bubbleMain.className = 'line-bubble';
+
+        if(isImg) {
+            const imgDom = document.createElement('img');
+            imgDom.className = 'chat-img';
+            imgDom.src = content;
+            imgDom.onclick = () => window.open(content);
+            bubbleMain.appendChild(imgDom);
+        } else {
+            const txtSpan = document.createElement('span');
+            txtSpan.textContent = content; // 防范 XSS 恶意脚本
+            bubbleMain.appendChild(txtSpan);
+        }
+
+        // 获取格式化时间戳
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        const metaSpan = `<span class="bubble-meta">${isSelf ? '已读<br>'+timeStr : timeStr}</span>`;
+
+        // 拼接节点排列顺序
+        contentWrap.appendChild(bubbleMain);
+        
+        if(isSelf) {
+            row.innerHTML += metaSpan;
+            row.appendChild(contentWrap);
+        } else {
+            row.appendChild(contentWrap);
+            row.innerHTML += metaSpan;
+        }
+
+        chatArea.appendChild(row);
+        chatArea.scrollTo({ top: chatArea.scrollHeight, behavior: 'smooth' });
+    }
+
+    function appendSystemNotice(text) {
+        const chatArea = document.getElementById('chatArea');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'msg-item msg-system';
+        msgDiv.textContent = text;
+        chatArea.appendChild(msgDiv);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function leaveRoom() {
+        if(confirm('确定断开连接并返回 LINE 档案首页吗？')) {
+            publishLinePacket({ type: 'leave', user: myName });
+            window.location.reload();
+        }
+    }
+</script>
+</body>
+</html>
