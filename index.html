@@ -47,7 +47,6 @@
         }
         .window-body { padding: 25px 20px; display: flex; flex-direction: column; gap: 20px; }
         
-        /* 头像上传 */
         .avatar-upload-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .avatar-preview {
             width: 76px; height: 76px; border-radius: 50%; border: 2px dashed var(--neon-cyan);
@@ -77,7 +76,6 @@
             .room-container { width: 414px; height: 840px; border-radius: 16px; border: 2px solid var(--neon-purple); box-shadow: 0 0 30px rgba(123,44,191,0.5); } 
         }
 
-        /* 头部状态 */
         .room-header-bar {
             padding: 12px 15px; background: var(--window-bg); display: flex; justify-content: space-between; align-items: center;
             border-bottom: 2px solid var(--neon-purple); flex-shrink: 0;
@@ -85,11 +83,19 @@
         .angel-status { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; }
         .status-dot { width: 8px; height: 8px; background: var(--neon-cyan); border-radius: 50%; animation: pulse 1s infinite; }
 
-        /* 3. 麦位网格（支持双击拍一拍） */
+        /* 重构：双轨道高级电竞控音调音面板 */
+        .control-panel {
+            background: #141022; padding: 10px 15px; display: flex; flex-direction: column; gap: 8px;
+            border-bottom: 2px solid rgba(123,44,191,0.2); flex-shrink: 0;
+        }
+        .volume-slider-wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 11px; color: #a29bbd; }
+        .volume-slider-wrap span { width: 75px; flex-shrink: 0; }
+        .volume-slider { flex: 1; accent-color: var(--neon-pink); height: 4px; cursor: pointer; background: #000; border-radius: 2px; }
+        .volume-slider.mic-style { accent-color: var(--neon-cyan); }
+
+        /* 3. 麦位网格 */
         .seats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 8px; padding: 15px 10px; background: #0b0813; flex-shrink: 0; }
         .seat-item { display: flex; flex-direction: column; align-items: center; position: relative; cursor: pointer; transition: transform 0.1s; }
-        
-        /* 拍一拍晃动动画挂载 */
         .seat-item.shake-animation { animation: shakeEffect 0.4s ease-in-out; }
 
         .seat-avatar-wrap { 
@@ -99,29 +105,18 @@
         .seat-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         .seat-avatar-wrap svg { width: 32px; height: 32px; fill: #4a3e6d; }
         
-        /* 说话状态：华丽霓虹闪烁 border */
         .seat-item.speaking .seat-avatar-wrap { 
             border-color: var(--neon-cyan); box-shadow: 0 0 12px var(--neon-cyan); 
         }
         .seat-index { position: absolute; bottom: -4px; background: var(--neon-purple); font-size: 9px; padding: 1px 6px; border-radius: 8px; white-space: nowrap; border: 1px solid var(--neon-pink); }
         .user-name { font-size: 11px; color: #a29bbd; margin-top: 8px; max-width: 58px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
-        
-        /* 浮动表情/喂药气泡提示 */
-        .seat-pop-effect {
-            position: absolute; top: -18px; background: var(--neon-pink); padding: 2px 6px; border-radius: 8px; font-size: 12px;
-            box-shadow: 0 0 8px var(--neon-pink); display: none; z-index: 10; font-weight: bold; pointer-events: none;
-        }
+        .seat-pop-effect { position: absolute; top: -18px; background: var(--neon-pink); padding: 2px 6px; border-radius: 8px; font-size: 12px; box-shadow: 0 0 8px var(--neon-pink); display: none; z-index: 10; font-weight: bold; pointer-events: none; }
 
-        /* 4. 经典蓝紫公屏区 */
+        /* 4. 公屏区 */
         .chat-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; -webkit-overflow-scrolling: touch; }
-        
-        /* 拍一拍/系统消息气泡 */
         .msg-system { background: rgba(0,255,255,0.08); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); align-self: center; font-size: 11px; padding: 5px 12px; border-radius: 10px; width: 90%; text-align: center; }
-        
-        /* 专属赤字超级留言 (SuperChat) 样式 */
         .msg-superchat { background: linear-gradient(135deg, #ff0055, #7b2cbf); border: 2px solid #ff00ffff; color: #fff; align-self: center; font-size: 13px; padding: 8px 15px; border-radius: 12px; width: 92%; box-shadow: 0 0 15px #ff0055; font-weight: bold; }
 
-        /* 对话组合结构 */
         .bubble-row { display: flex; gap: 8px; max-width: 85%; }
         .bubble-row.self { align-self: flex-end; flex-direction: row-reverse; }
         .bubble-row.other { align-self: flex-start; }
@@ -135,11 +130,9 @@
         .bubble-row.other .line-bubble { background: var(--bubble-other); color: #fff; border-top-left-radius: 2px; border: 1px solid rgba(255,255,255,0.03); }
         .bubble-row.self .line-bubble { background: var(--bubble-self); color: #fff; border-top-right-radius: 2px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
-        /* 发送的图片样式 */
         .chat-img { max-width: 140px; max-height: 140px; border-radius: 8px; margin-top: 3px; cursor: pointer; border: 1px solid var(--neon-purple); transition: transform 0.2s; }
-        .chat-img:hover { transform: scale(1.02); }
 
-        /* 5. 游戏特色互动操作台 */
+        /* 5. 趣味操作面板 */
         .game-feature-panel { background: var(--window-bg); border-top: 2px solid var(--neon-purple); display: flex; padding: 6px 12px; gap: 14px; overflow-x: auto; flex-shrink: 0; scrollbar-width: none; }
         .game-feature-panel::-webkit-scrollbar { display: none; }
         .feat-btn { padding: 4px 10px; font-size: 12px; border: 1px solid var(--neon-pink); background: transparent; color: var(--neon-pink); border-radius: 6px; font-weight: bold; cursor: pointer; white-space: nowrap; }
@@ -149,35 +142,21 @@
         /* 底部主控制栏 */
         .bottom-bar { padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: #110d1c; display: flex; align-items: center; gap: 10px; flex-shrink: 0; z-index: 99; border-top: 1px solid var(--neon-purple); }
         .bar-icon { font-size: 22px; cursor: pointer; color: var(--neon-purple); display: flex; align-items: center; }
-        .bar-icon:hover { color: var(--neon-cyan); }
         .input-box { flex: 1; background: #000; border: 1px solid var(--neon-purple); padding: 10px 14px; border-radius: 20px; color: #fff; font-size: 13px; outline: none; }
         .input-box:focus { border-color: var(--neon-pink); box-shadow: 0 0 8px var(--neon-pink); }
         .btn-icon { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.04); display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; flex-shrink: 0; }
         .btn-icon.active { background: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink); }
 
-        /* 6. 核心功能：全屏高保真图片放大缩小模态视窗 */
-        .lightbox-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,3,10,0.95);
-            z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .lightbox-header {
-            position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; color: #fff; font-size: 14px; z-index: 10002;
-        }
+        /* 6. 高清灯箱放大缩小模态窗 */
+        .lightbox-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,3,10,0.95); z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .lightbox-header { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; color: #fff; font-size: 14px; z-index: 10002; }
         .lightbox-close { font-size: 24px; cursor: pointer; color: var(--neon-pink); font-weight: bold; }
-        .lightbox-img-wrap {
-            max-width: 90%; max-height: 75%; display: flex; justify-content: center; align-items: center; overflow: hidden; transition: transform 0.1s ease;
-        }
+        .lightbox-img-wrap { max-width: 90%; max-height: 75%; display: flex; justify-content: center; align-items: center; overflow: hidden; transition: transform 0.1s ease; }
         .lightbox-img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 0 25px var(--neon-purple); border: 2px solid var(--neon-pink); }
-        .lightbox-controls {
-            position: absolute; bottom: 35px; display: flex; gap: 25px; background: rgba(0,0,0,0.6); padding: 10px 25px; border-radius: 20px; border: 1px solid var(--neon-purple); z-index: 10002;
-        }
+        .lightbox-controls { position: absolute; bottom: 35px; display: flex; gap: 25px; background: rgba(0,0,0,0.6); padding: 10px 25px; border-radius: 20px; border: 1px solid var(--neon-purple); z-index: 10002; }
         .zoom-btn { background: transparent; border: none; color: var(--neon-cyan); font-size: 18px; font-weight: bold; cursor: pointer; width: 35px; }
 
-        /* 特效：吃药后全屏迷幻滤镜 */
-        .glitch-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,255,255,0.15);
-            z-index: 9998; mix-blend-mode: overlay; pointer-events: none; display: none; animation: flashEffect 0.2s infinite;
-        }
+        .glitch-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,255,255,0.15); z-index: 9998; mix-blend-mode: overlay; pointer-events: none; display: none; animation: flashEffect 0.2s infinite; }
 
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
         @keyframes flashEffect { 0% { opacity: 0.2; } 50% { opacity: 0.6; } 100% { opacity: 0.2; } }
@@ -222,7 +201,7 @@
                 <span style="font-size:11px; color:#6b5f93;">点击框框上传自定义头像</span>
                 <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="loadCustomAvatar(this)">
             </div>
-            <input type="text" class="nickname-input" id="nicknameInput" placeholder="输入拉风的群聊网名(支持中文)" maxlength="8">
+            <input type="text" class="nickname-input" id="nicknameInput" placeholder="输入群聊网名(支持中文)" maxlength="8">
             <button class="enter-btn" onclick="launchAngelRoom()">合流连接入直播间</button>
         </div>
     </div>
@@ -234,13 +213,24 @@
             <div class="status-dot"></div>
             <span>超天酱的秘密联络网</span>
         </div>
-        <span style="font-size:12px; color:var(--neon-pink);">好感度: 100%</span>
+        <span style="font-size:12px; color:var(--neon-pink);">高级硬件降噪已挂载</span>
+    </div>
+
+    <div class="control-panel">
+        <div class="volume-slider-wrap">
+            <span style="color:var(--neon-cyan)">🎤 我的麦克风</span>
+            <input type="range" class="volume-slider mic-style" id="micVolumeSlider" min="0" max="100" value="100" oninput="adjustMicVolume(this.value)">
+        </div>
+        <div class="volume-slider-wrap">
+            <span style="color:var(--neon-pink)">🔊 队友主音量</span>
+            <input type="range" class="volume-slider" id="masterVolumeSlider" min="0" max="100" value="80" oninput="adjustMasterVolume(this.value)">
+        </div>
     </div>
 
     <div class="seats-grid" id="seatsGrid"></div>
 
     <div class="chat-area" id="chatArea">
-        <div class="msg-system">【广播】欢迎进入秘密房间。双击任意人的麦位可执行「拍一拍」；下方有游戏专属趣味互动。</div>
+        <div class="msg-system">【广播】已升级 48kHz 电竞采样硬件算法降噪。双击麦位执行「拍一拍」震荡。</div>
     </div>
 
     <div class="game-feature-panel">
@@ -269,13 +259,6 @@
     let myName = "", myCustomAvatar = "", myAgoraUid = 0, isMuted = true, currentZoomScale = 1;
     let roomUsers = {};
 
-    // 微信特权音频通道解锁
-    document.addEventListener("WeixinJSBridgeReady", function () {
-        const fakeCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if(fakeCtx) fakeCtx.resume();
-    }, false);
-
-    // 图片无损画布压缩，防MQTT报文超载卡死
     function resizeImg(file, bound, callback) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -310,48 +293,32 @@
         input.value = '';
     }
 
-    // 按钮功能 1：图片点击进行全屏查看与多档放大缩小
     function openLightbox(src) {
         const modal = document.getElementById('lightboxModal');
-        const img = document.getElementById('targetLightboxImg');
-        img.src = src;
+        document.getElementById('targetLightboxImg').src = src;
         modal.style.display = 'flex';
         resetImageZoom();
     }
-    function closeLightbox() {
-        document.getElementById('lightboxModal').style.display = 'none';
-    }
+    function closeLightbox() { document.getElementById('lightboxModal').style.display = 'none'; }
     function adjustImageZoom(step) {
         currentZoomScale = Math.max(0.4, Math.min(4, currentZoomScale + step));
         document.getElementById('lightboxImgWrap').style.transform = `scale(${currentZoomScale})`;
     }
-    function resetImageZoom() {
-        currentZoomScale = 1;
-        document.getElementById('lightboxImgWrap').style.transform = 'scale(1)';
-    }
+    function resetImageZoom() { currentZoomScale = 1; document.getElementById('lightboxImgWrap').style.transform = 'scale(1)'; }
 
-    // 按钮功能 2：发送快捷动作文本表情
-    function sendQuickEmoji(val) {
-        publishLinePacket({ type: 'chat', sender: myName, avatar: myCustomAvatar, payload: val });
-    }
+    function sendQuickEmoji(val) { publishLinePacket({ type: 'chat', sender: myName, avatar: myCustomAvatar, payload: val }); }
 
-    // 按钮功能 3：糖糖发赤字超赞（Super Chat）
     function triggerSuperChat() {
         const money = Math.floor(Math.random() * 899) + 100;
         publishLinePacket({ type: 'sc', sender: myName, amount: money });
     }
 
-    // 按钮功能 4：喂药特色物理障眼法效果（全屏Glitch闪烁）
-    function triggerTakeMeds() {
-        publishLinePacket({ type: 'meds', sender: myName });
-    }
+    function triggerTakeMeds() { publishLinePacket({ type: 'meds', sender: myName }); }
 
     function launchAngelRoom() {
         const nameInput = document.getElementById('nicknameInput').value.trim();
         if(!nameInput) { alert("起一个可爱的网名吧！"); return; }
         myName = nameInput;
-        
-        // 核心纠偏：转换为纯数字合法 UID 接入声网，完美解决中文名字导致无声崩溃的 Bug
         myAgoraUid = Math.floor(Math.random() * 89999) + 10000;
 
         document.getElementById('loginOverlay').style.display = 'none';
@@ -382,24 +349,105 @@
         }
     }
 
-    // 核心功能 5：双击执行「拍一拍」并触发头像物理摇晃动画
     function bindPokeEventToSeats() {
         const users = Object.keys(roomUsers);
         users.forEach((username, idx) => {
             if(idx >= 8) return;
             const seatDom = document.getElementById(`seat_${idx + 1}`);
             if(seatDom) {
-                // 解绑老事件防止重叠
                 seatDom.ondblclick = null;
-                // 绑定全新的双击事件
-                seatDom.ondblclick = () => {
-                    publishLinePacket({ type: 'poke', trigger: myName, target: username });
-                };
+                seatDom.ondblclick = () => { publishLinePacket({ type: 'poke', trigger: myName, target: username }); };
             }
         });
     }
 
-    // --- 数据同步层（打通打字、自定义头像、SC、喂药、拍一拍） ---
+    // --- 🍏 控音功能扩展：调节本地麦克风增益音量 ---
+    function adjustMicVolume(value) {
+        if (localAudioTrack) {
+            // 声网硬件音量范围 0 - 100
+            localAudioTrack.setVolume(parseInt(value));
+            console.log("本地麦克风录音输出音量设定为:", value);
+        }
+    }
+
+    // --- 🍏 控音功能扩展：拉动调节全局远端队友总音量 ---
+    function adjustMasterVolume(value) {
+        if (!agoraClient) return;
+        agoraClient.remoteUsers.forEach(user => {
+            if (user.audioTrack) {
+                user.audioTrack.setVolume(parseInt(value));
+            }
+        });
+        console.log("全局大厅队友播放音量设定为:", value);
+    }
+
+    // --- 🍏 核心技术更新：声网硬件高级算法防啸叫+极致降噪方案 ---
+    async function initAgoraVoice() {
+        try {
+            agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+            agoraClient.on("user-published", async (user, mediaType) => {
+                await agoraClient.subscribe(user, mediaType);
+                if (mediaType === "audio") { 
+                    user.audioTrack.play(); 
+                    // 初始化对齐滑块设定的主音量
+                    let sliderVol = document.getElementById('masterVolumeSlider').value;
+                    user.audioTrack.setVolume(parseInt(sliderVol));
+                }
+            });
+
+            agoraClient.enableAudioVolumeIndicator();
+            agoraClient.on("volume-indicator", volumes => {
+                volumes.forEach(vol => {
+                    const users = Object.keys(roomUsers);
+                    const targetName = users.find(name => roomUsers[name].agoraUid == vol.uid);
+                    const index = users.indexOf(targetName);
+                    if(index !== -1 && index < 8) {
+                        const seatDom = document.getElementById(`seat_${index + 1}`);
+                        if(seatDom) seatDom.classList.toggle('speaking', vol.level > 6);
+                    }
+                });
+            });
+
+            await agoraClient.join(AGORA_APP_ID, CHANNEL_NAME, null, myAgoraUid);
+            appendSystemNotice("🔊 已经连通声网商业高可靠音频流。");
+
+        } catch (e) { alert("声网加载失败，请确保当前在 HTTPS 线上加密链接下打开！"); }
+    }
+
+    async function toggleMic() {
+        if(!agoraClient) return;
+        isMuted = !isMuted;
+        const btn = document.getElementById('micBtn');
+        try {
+            if(!localAudioTrack) {
+                // 🍎【核心升级】：加载高级降噪参数约束，剔除环境杂音，阻断外部回声啸叫
+                localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ 
+                    AEC: true,               // 开启回声消除 (Echo Cancellation)
+                    ANS: true,               // 开启高级智能降噪 (Automatic Noise Suppression)
+                    AGC: true,               // 开启自动增益控制 (Automatic Gain Control)
+                    audioSampleRate: 48000,  // 锁定 48kHz 电竞高清采样率
+                    optimizationMode: "detail" 
+                });
+                await agoraClient.publish([localAudioTrack]);
+            }
+            
+            await localAudioTrack.setEnabled(!isMuted);
+            
+            // 每次解禁开麦时，强制校准拉动条对应的麦克风增益，防止系统默认爆音
+            if(!isMuted) {
+                let micVol = document.getElementById('micVolumeSlider').value;
+                localAudioTrack.setVolume(parseInt(micVol));
+            }
+
+            btn.innerText = isMuted ? "🔇" : "🎤";
+            btn.classList.toggle('active', !isMuted);
+            appendSystemNotice(isMuted ? "你已闭麦下麦" : "【硬件级高级降噪已启用】你现在可以清晰连麦说话了！");
+            publishLinePacket({ type: 'mic', user: myName, isMuted: isMuted });
+        } catch (err) { isMuted = true; alert("麦克风初始化被系统拉黑阻断！请检查系统隐私授权。"); }
+    }
+
+    // --- 数据同步层 (MQTT) ---
     function initMqttSync() {
         const brokerUrl = 'wss://broker.emqx.io:8084/mqtt'; 
         mqttClient = mqtt.connect(brokerUrl, { connectTimeout: 5000, clientId: 'angel_' + Math.random().toString(16).substr(2, 7) });
@@ -415,7 +463,7 @@
                 if (data.type === 'join') {
                     roomUsers[data.user] = { agoraUid: data.agoraUid, avatar: data.avatar, isMuted: data.isMuted };
                     refreshSeats();
-                    appendSystemNotice(`【通知】${data.user} 浮出网海加入房间`);
+                    appendSystemNotice(`【群通知】${data.user} 降临大厅`);
                     if(data.user !== myName) {
                         publishLinePacket({ type: 'sync_resp', user: myName, agoraUid: myAgoraUid, avatar: myCustomAvatar, isMuted: isMuted });
                     }
@@ -434,16 +482,13 @@
                     if(roomUsers[data.user]) roomUsers[data.user].isMuted = data.isMuted;
                     refreshSeats();
                 }
-                // 收到全网拍一拍动作
                 else if (data.type === 'poke') {
-                    appendSystemNotice(`✨【拍一拍】${data.trigger} 拍了拍 ${data.target} 的双马尾，并说：阿美莉卡大红心！`);
+                    appendSystemNotice(`✨【拍一拍】${data.trigger} 拍了拍 ${data.target} 并且大喊：阿美莉卡大红心！`);
                     triggerSeatShakeAnimation(data.target, "⚡ 绝赞");
                 }
-                // 收到全网SC动作
                 else if (data.type === 'sc') {
                     appendSuperChatMsg(data.sender, data.amount);
                 }
-                // 收到全网喂药动作
                 else if (data.type === 'meds') {
                     triggerMedsGlitchOverlay(data.sender);
                 }
@@ -474,11 +519,9 @@
                 if(!roomUsers[username].isMuted) nameSpan.innerText += " 🎙️";
             }
         });
-        // 动态重绑拍一拍
         bindPokeEventToSeats();
     }
 
-    // 头像物理摇晃跟文本冒泡
     function triggerSeatShakeAnimation(username, text) {
         const users = Object.keys(roomUsers);
         const index = users.indexOf(username);
@@ -495,58 +538,11 @@
     }
 
     function triggerMedsGlitchOverlay(user) {
-        appendSystemNotice(`💊【精神安定】${user} 给超天酱递过去了精神安定剂！`);
+        appendSystemNotice(`💊【精神安定】${user} 给超天酱喂了精神安定剂！`);
         triggerSeatShakeAnimation(user, "💊 嗑药");
         const overlay = document.getElementById('glitchOverlay');
         overlay.style.display = 'block';
-        setTimeout(() => { overlay.style.display = 'none'; }, 2000); // 迷幻特效持续2秒
-    }
-
-    // --- 声网商业级真语音（解决全端无声、跨网拥堵） ---
-    async function initAgoraVoice() {
-        try {
-            agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-
-            agoraClient.on("user-published", async (user, mediaType) => {
-                await agoraClient.subscribe(user, mediaType);
-                if (mediaType === "audio") { user.audioTrack.play(); }
-            });
-
-            // 高敏分贝捕获（对齐触发糖糖经典的霓虹青说话发光 border）
-            agoraClient.enableAudioVolumeIndicator();
-            agoraClient.on("volume-indicator", volumes => {
-                volumes.forEach(vol => {
-                    const users = Object.keys(roomUsers);
-                    const targetName = users.find(name => roomUsers[name].agoraUid == vol.uid);
-                    const index = users.indexOf(targetName);
-                    if(index !== -1 && index < 8) {
-                        const seatDom = document.getElementById(`seat_${index + 1}`);
-                        if(seatDom) seatDom.classList.toggle('speaking', vol.level > 6);
-                    }
-                });
-            });
-
-            await agoraClient.join(AGORA_APP_ID, CHANNEL_NAME, null, myAgoraUid);
-            appendSystemNotice("🔊 【通知】声网商业合流引擎就绪。");
-
-        } catch (e) { alert("声网加载失败，请确保当前在 HTTPS 线上链接下打开！"); }
-    }
-
-    async function toggleMic() {
-        if(!agoraClient) return;
-        isMuted = !isMuted;
-        const btn = document.getElementById('micBtn');
-        try {
-            if(!localAudioTrack) {
-                localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ AEC: true, ANS: true, AGC: true });
-                await agoraClient.publish([localAudioTrack]);
-            }
-            await localAudioTrack.setEnabled(!isMuted);
-            btn.innerText = isMuted ? "🔇" : "🎤";
-            btn.classList.toggle('active', isMuted);
-            appendSystemNotice(isMuted ? "你已闭麦下线" : "麦克风已强制加载，你现在正在实时开麦中！");
-            publishLinePacket({ type: 'mic', user: myName, isMuted: isMuted });
-        } catch (err) { isMuted = true; alert("麦克风权限被设备拦截！请在系统隐私中允许微信/浏览器录音。"); }
+        setTimeout(() => { overlay.style.display = 'none'; }, 2000);
     }
 
     function sendMsg() {
@@ -583,7 +579,6 @@
             const img = document.createElement('img');
             img.className = 'chat-img';
             img.src = content;
-            // 完美点击响应：点开调用高级灯箱放大缩小模态窗
             img.onclick = () => openLightbox(content);
             bubble.appendChild(img);
         } else {
@@ -602,7 +597,7 @@
         const chatArea = document.getElementById('chatArea');
         const msgDiv = document.createElement('div');
         msgDiv.className = 'msg-superchat';
-        msgDiv.innerHTML = `💸 SuperChat 赤字：[${sender}] 向 OMGkawaiiAngel 狂热打赏了 ￥${amount} 元！并高呼：阿美莉卡大红心！！！`;
+        msgDiv.innerHTML = `💸 SuperChat：[${sender}] 向超天酱打赏了 ￥${amount} 元！阿美莉卡大红心！！！`;
         chatArea.appendChild(msgDiv);
         chatArea.scrollTo({ top: chatArea.scrollHeight, behavior: 'smooth' });
         triggerSeatShakeAnimation(sender, `💸 ￥${amount}`);
