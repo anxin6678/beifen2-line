@@ -3,624 +3,609 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
-    <title>LINE Call & Chat</title>
+    <title>OMGkawaiiAngel 🔴 糖糖的秘密直播间</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/mqtt/4.2.8/mqtt.min.js"></script>
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.22.0.js"></script>
     
     <style>
         :root {
-            --line-green: #06C755;
-            --line-green-hover: #05b04b;
-            --line-bg: #8b9bb4; /* LINE经典蓝灰聊天背景 */
-            --bubble-self: #A9E976; /* LINE自发气泡绿 */
-            --bubble-other: #ffffff;
-            --text-main: #111111;
-            --text-sub: #666666;
-            --border-color: #e5e5e5;
+            --neon-pink: #ff007f;
+            --neon-purple: #7b2cbf;
+            --neon-cyan: #00ffff;
+            --window-bg: #161224;
+            --desktop-bg: #0d0a16;
+            --text-color: #ffffff;
+            --bubble-self: #ff007f;
+            --bubble-other: #251f3d;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", Arial, sans-serif; 
-            background-color: #f4f4f4; color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; 
+            background-color: var(--desktop-bg); color: var(--text-color); 
             height: 100dvh; display: flex; justify-content: center; align-items: center; overflow: hidden; 
-            -webkit-user-select: none; user-select: none; 
+            -webkit-user-select: none; user-select: none;
         }
-        input, textarea { -webkit-user-select: text; user-select: text; }
-        
-        /* 1. LINE 风格登录卡片 */
+        input { -webkit-user-select: text; user-select: text; }
+
+        /* 1. 糖糖赛博风登录视窗 */
         .login-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #ffffff; z-index: 9999; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; 
+            background: rgba(13, 10, 22, 0.96); z-index: 9999; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; 
         }
-        .login-box { 
-            width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 24px; align-items: center;
+        .window-frame {
+            width: 100%; max-width: 360px; background: var(--window-bg);
+            border: 2px solid var(--neon-pink); border-radius: 12px;
+            box-shadow: 0 0 20px var(--neon-pink); display: flex; flex-direction: column; overflow: hidden;
         }
-        .line-logo {
-            width: 80px; height: 80px; background: var(--line-green); border-radius: 22px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 26px; color: #fff; font-weight: 900; letter-spacing: -1px;
-            box-shadow: 0 8px 16px rgba(6, 199, 85, 0.25);
+        .window-header {
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
+            padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; font-weight: bold; letter-spacing: 1px; color: #fff;
         }
-        .login-box h2 { font-size: 20px; color: var(--text-main); font-weight: 600; margin-top: -5px; }
+        .window-body { padding: 25px 20px; display: flex; flex-direction: column; gap: 20px; }
         
-        .avatar-upload-area { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .preview-avatar-wrap {
-            width: 80px; height: 80px; border-radius: 50%; border: 1px solid var(--border-color);
-            display: flex; justify-content: center; align-items: center; overflow: hidden; background: #f8f8f8;
-            position: relative; cursor: pointer;
+        /* 头像上传 */
+        .avatar-upload-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .avatar-preview {
+            width: 76px; height: 76px; border-radius: 50%; border: 2px dashed var(--neon-cyan);
+            display: flex; justify-content: center; align-items: center; overflow: hidden; background: #000; cursor: pointer;
         }
-        .preview-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
-        .preview-avatar-wrap svg { width: 40px; height: 40px; fill: #b2b2b2; }
-        .upload-hint { font-size: 12px; color: var(--text-sub); }
+        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-preview svg { width: 38px; height: 38px; fill: var(--neon-cyan); }
         
         .nickname-input { 
-            width: 100%; background: #f8f8f8; border: 1px solid var(--border-color); 
-            padding: 14px; border-radius: 8px; color: var(--text-main); font-size: 15px; outline: none; text-align: center; 
+            width: 100%; background: #000; border: 1px solid var(--neon-purple); 
+            padding: 12px; border-radius: 8px; color: #fff; font-size: 14px; outline: none; text-align: center; 
         }
-        .nickname-input:focus { border-color: var(--line-green); background: #fff; }
+        .nickname-input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
         
         .enter-btn { 
-            width: 100%; background: var(--line-green); color: white; border: none; 
-            padding: 14px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; 
-            transition: background 0.2s;
+            background: var(--neon-pink); color: white; border: none; padding: 14px; 
+            font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; 
+            text-shadow: 0 0 5px #000; box-shadow: 0 4px 10px rgba(255,0,127,0.4);
         }
-        .enter-btn:hover { background: var(--line-green-hover); }
 
-        /* 2. 主页面容器 (经典手机面板视口) */
+        /* 2. 主聊天室面板 */
         .room-container { 
-            width: 100%; height: 100dvh; background: var(--line-bg);
+            width: 100%; height: 100dvh; background: var(--desktop-bg);
             display: flex; flex-direction: column; position: relative; overflow: hidden; 
         }
-        
         @media (min-width: 768px) { 
-            .room-container { 
-                width: 420px; height: 850px; border-radius: 12px; 
-                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); border: 1px solid #d0d0d0;
-            } 
-        }
-        
-        /* LINE 极简头部 */
-        .room-header { 
-            padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; 
-            background: #ffffff; border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 10;
-        }
-        .room-title h3 { font-size: 16px; font-weight: 600; color: var(--text-main); }
-        .room-title p { font-size: 11px; color: var(--text-sub); margin-top: 1px; }
-        
-        .leave-btn {
-            background: transparent; border: none; color: #ff3b30; font-size: 14px; font-weight: 500; cursor: pointer;
+            .room-container { width: 414px; height: 840px; border-radius: 16px; border: 2px solid var(--neon-purple); box-shadow: 0 0 30px rgba(123,44,191,0.5); } 
         }
 
-        /* 3. LINE 标志性多人语音通话浮窗面板 */
-        .line-call-panel {
-            background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px);
-            padding: 12px; display: flex; flex-direction: column; gap: 10px;
-            border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 9;
+        /* 头部状态 */
+        .room-header-bar {
+            padding: 12px 15px; background: var(--window-bg); display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--neon-purple); flex-shrink: 0;
         }
-        .call-panel-header {
-            display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-sub); padding: 0 4px;
-        }
-        .call-users-grid {
-            display: flex; gap: 12px; overflow-x: auto; padding: 4px 0; scrollbar-width: none;
-        }
-        .call-users-grid::-webkit-scrollbar { display: none; }
-        
-        .call-user-item {
-            display: flex; flex-direction: column; align-items: center; position: relative; flex-shrink: 0;
-        }
-        .call-avatar-wrap {
-            width: 48px; height: 48px; border-radius: 50%; background: #e0e0e0;
-            position: relative; display: flex; justify-content: center; align-items: center;
-            border: 2px solid transparent; transition: all 0.2s;
-        }
-        .call-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .call-avatar-wrap svg { width: 28px; height: 28px; fill: #aaa; }
-        
-        /* 绿圈：LINE 经典正在说话发光动画 */
-        .call-user-item.speaking .call-avatar-wrap {
-            border-color: var(--line-green);
-            box-shadow: 0 0 8px rgba(6, 199, 85, 0.6);
-            transform: scale(1.04);
-        }
-        .call-user-name {
-            font-size: 10px; color: var(--text-main); margin-top: 5px;
-            max-width: 50px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
-        }
-        .mic-status-badge {
-            position: absolute; bottom: 14px; right: -2px; background: #ff3b30;
-            color: #fff; font-size: 8px; width: 14px; height: 14px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; border: 1px solid #fff;
-        }
-        .mic-status-badge.open { background: var(--line-green); }
+        .angel-status { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; }
+        .status-dot { width: 8px; height: 8px; background: var(--neon-cyan); border-radius: 50%; animation: pulse 1s infinite; }
 
-        /* 房主全局禁言按钮（仅悬停或长按时展现效果） */
-        .admin-action-mask {
-            position: absolute; top: 0; left: 0; width: 48px; height: 48px; border-radius: 50%;
-            background: rgba(255,59,48,0.85); color: white; font-size: 9px; font-weight: bold;
-            display: flex; justify-content: center; align-items: center; opacity: 0; cursor: pointer; transition: opacity 0.2s;
-        }
-        .call-user-item:hover .admin-action-mask { opacity: 1; }
+        /* 3. 麦位网格（支持双击拍一拍） */
+        .seats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 8px; padding: 15px 10px; background: #0b0813; flex-shrink: 0; }
+        .seat-item { display: flex; flex-direction: column; align-items: center; position: relative; cursor: pointer; transition: transform 0.1s; }
+        
+        /* 拍一拍晃动动画挂载 */
+        .seat-item.shake-animation { animation: shakeEffect 0.4s ease-in-out; }
 
-        /* 4. LINE 经典原生对话区 */
-        .chat-area { 
-            flex: 1; padding: 15px; overflow-y: auto; 
-            display: flex; flex-direction: column; gap: 14px; 
-            -webkit-overflow-scrolling: touch; 
+        .seat-avatar-wrap { 
+            width: 52px; height: 52px; border-radius: 50%; background: #221a36; 
+            position: relative; display: flex; justify-content: center; align-items: center; border: 2px solid transparent; 
         }
+        .seat-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .seat-avatar-wrap svg { width: 32px; height: 32px; fill: #4a3e6d; }
         
-        /* 系统级灰色消息提示 */
-        .msg-system { 
-            background: rgba(0, 0, 0, 0.15); color: #ffffff; 
-            align-self: center; font-size: 11px; padding: 4px 12px; border-radius: 12px;
-            max-width: 90%; text-align: center; line-height: 1.4;
+        /* 说话状态：华丽霓虹闪烁 border */
+        .seat-item.speaking .seat-avatar-wrap { 
+            border-color: var(--neon-cyan); box-shadow: 0 0 12px var(--neon-cyan); 
         }
+        .seat-index { position: absolute; bottom: -4px; background: var(--neon-purple); font-size: 9px; padding: 1px 6px; border-radius: 8px; white-space: nowrap; border: 1px solid var(--neon-pink); }
+        .user-name { font-size: 11px; color: #a29bbd; margin-top: 8px; max-width: 58px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
         
-        /* 标准气泡组合容器 */
-        .bubble-row { display: flex; gap: 8px; width: 100%; max-width: 85%; }
+        /* 浮动表情/喂药气泡提示 */
+        .seat-pop-effect {
+            position: absolute; top: -18px; background: var(--neon-pink); padding: 2px 6px; border-radius: 8px; font-size: 12px;
+            box-shadow: 0 0 8px var(--neon-pink); display: none; z-index: 10; font-weight: bold; pointer-events: none;
+        }
+
+        /* 4. 经典蓝紫公屏区 */
+        .chat-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; -webkit-overflow-scrolling: touch; }
+        
+        /* 拍一拍/系统消息气泡 */
+        .msg-system { background: rgba(0,255,255,0.08); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); align-self: center; font-size: 11px; padding: 5px 12px; border-radius: 10px; width: 90%; text-align: center; }
+        
+        /* 专属赤字超级留言 (SuperChat) 样式 */
+        .msg-superchat { background: linear-gradient(135deg, #ff0055, #7b2cbf); border: 2px solid #ff00ffff; color: #fff; align-self: center; font-size: 13px; padding: 8px 15px; border-radius: 12px; width: 92%; box-shadow: 0 0 15px #ff0055; font-weight: bold; }
+
+        /* 对话组合结构 */
+        .bubble-row { display: flex; gap: 8px; max-width: 85%; }
         .bubble-row.self { align-self: flex-end; flex-direction: row-reverse; }
         .bubble-row.other { align-self: flex-start; }
+        .msg-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid var(--neon-purple); }
+        .msg-body-wrap { display: flex; flex-direction: column; gap: 2px; }
+        .bubble-row.self .msg-body-wrap { align-items: flex-end; }
+        .msg-username { font-size: 11px; color: #7e75a0; margin-left: 2px; }
+        .bubble-row.self .msg-username { display: none; }
         
-        .chat-avatar { width: 36px; height: 36px; border-radius: 50%; background: #fff; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); }
-        .chat-avatar-svg { width: 36px; height: 36px; background: #e0e0e0; border-radius: 50%; fill: #fff; flex-shrink: 0; }
-        
-        .bubble-content-wrap { display: flex; flex-direction: column; gap: 2px; }
-        .bubble-row.self .bubble-content-wrap { align-items: flex-end; }
-        
-        .bubble-user-name { font-size: 11px; color: rgba(255,255,255,0.8); margin-left: 2px; margin-bottom: 1px; }
-        .bubble-row.self .bubble-user-name { display: none; } /* 自己不显示名字 */
-        
-        /* 气泡本体 */
-        .line-bubble { 
-            padding: 9px 12px; border-radius: 16px; font-size: 14px; color: var(--text-main); 
-            line-height: 1.45; word-break: break-all; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-        }
-        .bubble-row.other .line-bubble { 
-            background: var(--bubble-other); border-top-left-radius: 4px; 
-        }
-        .bubble-row.self .line-bubble { 
-            background: var(--bubble-self); border-top-right-radius: 4px; 
-        }
-        
-        /* 气泡旁边的微小时间戳 */
-        .bubble-meta { font-size: 10px; color: rgba(255,255,255,0.7); align-self: flex-end; margin: 0 2px; white-space: nowrap; }
-        .bubble-row.self .bubble-meta { text-align: right; }
+        .line-bubble { padding: 9px 12px; border-radius: 14px; font-size: 13px; line-height: 1.45; word-break: break-all; box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
+        .bubble-row.other .line-bubble { background: var(--bubble-other); color: #fff; border-top-left-radius: 2px; border: 1px solid rgba(255,255,255,0.03); }
+        .bubble-row.self .line-bubble { background: var(--bubble-self); color: #fff; border-top-right-radius: 2px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
-        .chat-img { max-width: 160px; max-height: 160px; border-radius: 8px; display: block; margin-top: 2px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        /* 发送的图片样式 */
+        .chat-img { max-width: 140px; max-height: 140px; border-radius: 8px; margin-top: 3px; cursor: pointer; border: 1px solid var(--neon-purple); transition: transform 0.2s; }
+        .chat-img:hover { transform: scale(1.02); }
 
-        /* 5. LINE 底部多功能白底输入控制栏 */
-        .bottom-bar { 
-            padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); 
-            background: #ffffff; display: flex; align-items: center; gap: 12px; 
-            flex-shrink: 0; position: relative; z-index: 99; border-top: 1px solid var(--border-color);
+        /* 5. 游戏特色互动操作台 */
+        .game-feature-panel { background: var(--window-bg); border-top: 2px solid var(--neon-purple); display: flex; padding: 6px 12px; gap: 14px; overflow-x: auto; flex-shrink: 0; scrollbar-width: none; }
+        .game-feature-panel::-webkit-scrollbar { display: none; }
+        .feat-btn { padding: 4px 10px; font-size: 12px; border: 1px solid var(--neon-pink); background: transparent; color: var(--neon-pink); border-radius: 6px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .feat-btn.meds { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+        .feat-btn.sc { border-color: #ffb703; color: #ffb703; }
+
+        /* 底部主控制栏 */
+        .bottom-bar { padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: #110d1c; display: flex; align-items: center; gap: 10px; flex-shrink: 0; z-index: 99; border-top: 1px solid var(--neon-purple); }
+        .bar-icon { font-size: 22px; cursor: pointer; color: var(--neon-purple); display: flex; align-items: center; }
+        .bar-icon:hover { color: var(--neon-cyan); }
+        .input-box { flex: 1; background: #000; border: 1px solid var(--neon-purple); padding: 10px 14px; border-radius: 20px; color: #fff; font-size: 13px; outline: none; }
+        .input-box:focus { border-color: var(--neon-pink); box-shadow: 0 0 8px var(--neon-pink); }
+        .btn-icon { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.04); display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+        .btn-icon.active { background: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink); }
+
+        /* 6. 核心功能：全屏高保真图片放大缩小模态视窗 */
+        .lightbox-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,3,10,0.95);
+            z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center;
         }
-        
-        .bar-icon-btn { font-size: 22px; cursor: pointer; color: #777777; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; }
-        .bar-icon-btn:active { color: var(--line-green); }
-        
-        .line-input-box { 
-            flex: 1; background: #f5f5f5; border: 1px solid #e8e8e8; 
-            padding: 9px 14px; border-radius: 20px; color: var(--text-main); font-size: 14px; outline: none; 
+        .lightbox-header {
+            position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; color: #fff; font-size: 14px; z-index: 10002;
         }
-        .line-input-box:focus { background: #ffffff; border-color: var(--line-green); }
-        
-        /* LINE 电话控制悬浮按钮 */
-        .line-call-toggle {
-            width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0;
-            display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; transition: all 0.2s;
+        .lightbox-close { font-size: 24px; cursor: pointer; color: var(--neon-pink); font-weight: bold; }
+        .lightbox-img-wrap {
+            max-width: 90%; max-height: 75%; display: flex; justify-content: center; align-items: center; overflow: hidden; transition: transform 0.1s ease;
         }
-        .line-call-toggle.active {
-            background: #ff3b30; color: #fff; box-shadow: 0 0 8px rgba(255,59,48,0.4);
+        .lightbox-img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 0 25px var(--neon-purple); border: 2px solid var(--neon-pink); }
+        .lightbox-controls {
+            position: absolute; bottom: 35px; display: flex; gap: 25px; background: rgba(0,0,0,0.6); padding: 10px 25px; border-radius: 20px; border: 1px solid var(--neon-purple); z-index: 10002;
         }
-        .line-call-toggle.talking {
-            background: var(--line-green); color: #fff; box-shadow: 0 0 8px rgba(6, 199, 85, 0.4);
+        .zoom-btn { background: transparent; border: none; color: var(--neon-cyan); font-size: 18px; font-weight: bold; cursor: pointer; width: 35px; }
+
+        /* 特效：吃药后全屏迷幻滤镜 */
+        .glitch-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,255,255,0.15);
+            z-index: 9998; mix-blend-mode: overlay; pointer-events: none; display: none; animation: flashEffect 0.2s infinite;
         }
 
-        /* 表情滑动选择托盘 */
-        .emoji-tray {
-            background: #ffffff; padding: 10px 15px; display: flex; gap: 16px; overflow-x: auto;
-            border-top: 1px solid var(--border-color); flex-shrink: 0; scrollbar-width: none; display: none;
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        @keyframes flashEffect { 0% { opacity: 0.2; } 50% { opacity: 0.6; } 100% { opacity: 0.2; } }
+        @keyframes shakeEffect {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px) rotate(-3deg); }
+            40%, 80% { transform: translateX(6px) rotate(3deg); }
         }
-        .emoji-tray::-webkit-scrollbar { display: none; }
-        .tray-emoji-item { font-size: 22px; cursor: pointer; }
     </style>
 </head>
 <body>
 
+<div class="glitch-overlay" id="glitchOverlay"></div>
+
+<div class="lightbox-modal" id="lightboxModal">
+    <div class="lightbox-header">
+        <span>OMG网络图片浏览器 1.0</span>
+        <span class="lightbox-close" onclick="closeLightbox()">✕ 关闭</span>
+    </div>
+    <div class="lightbox-img-wrap" id="lightboxImgWrap">
+        <img src="" id="targetLightboxImg" alt="大图">
+    </div>
+    <div class="lightbox-controls">
+        <button class="zoom-btn" onclick="adjustImageZoom(0.2)">➕</button>
+        <button class="zoom-btn" onclick="resetImageZoom()">🔄</button>
+        <button class="zoom-btn" onclick="adjustImageZoom(-0.2)">➖</button>
+    </div>
+</div>
+
 <div class="login-overlay" id="loginOverlay">
-    <div class="login-box">
-        <div class="line-logo">LINE</div>
-        <h2>建立你的 LINE 语音账户</h2>
-        
-        <div class="avatar-upload-area">
-            <div class="preview-avatar-wrap" onclick="document.getElementById('avatarFileInput').click()" id="avatarPreview">
-                <svg viewBox="0 0 1024 1024"><path d="M512 512c141.4 0 256-114.6 256-256S653.4 0 512 0 256 114.6 256 256s114.6 256 256 256zM512 614.4c-243.2 0-512 121.6-512 364.8v44.8h1024v-44.8c0-243.2-268.8-364.8-512-364.8z"/></svg>
+    <div class="window-frame">
+        <div class="window-header">
+            <span>INTERNET_ANGEL.EXE</span>
+            <span>■ ✕</span>
+        </div>
+        <div class="window-body">
+            <h2>OMGkawaiiAngel 连麦登记</h2>
+            <div class="avatar-upload-wrap">
+                <div class="avatar-preview" onclick="document.getElementById('avatarInput').click()" id="avatarPreview">
+                    <svg viewBox="0 0 1024 1024"><path d="M512 512c141.4 0 256-114.6 256-256S653.4 0 512 0 256 114.6 256 256s114.6 256 256 256zM512 614.4c-243.2 0-512 121.6-512 364.8v44.8h1024v-44.8c0-243.2-268.8-364.8-512-364.8z"/></svg>
+                </div>
+                <span style="font-size:11px; color:#6b5f93;">点击框框上传自定义头像</span>
+                <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="loadCustomAvatar(this)">
             </div>
-            <span class="upload-hint">设置自定义头像</span>
-            <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="handleAvatarUpload(this)">
+            <input type="text" class="nickname-input" id="nicknameInput" placeholder="输入拉风的群聊网名(支持中文)" maxlength="8">
+            <button class="enter-btn" onclick="launchAngelRoom()">合流连接入直播间</button>
         </div>
-
-        <input type="text" class="nickname-input" id="nicknameInput" placeholder="输入您的群聊网名 (支持中文)" maxlength="12">
-        
-        <div style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-sub);">
-            <input type="checkbox" id="isHostMode" style="accent-color: var(--line-green); width:15px; height:15px;">
-            <label l for="isHostMode">申请成为该房间的最高管理员(房主)</label>
-        </div>
-
-        <button class="enter-btn" onclick="initializeLineEnvironment()">连接进入聊天室</button>
     </div>
 </div>
 
 <div class="room-container">
-    <div class="room-header">
-        <div class="room-title">
-            <h3 id="lineTitle">LINE 群组聊天大厅</h3>
-            <p>实时音视频合流信道就绪</p>
+    <div class="room-header-bar">
+        <div class="angel-status">
+            <div class="status-dot"></div>
+            <span>超天酱的秘密联络网</span>
         </div>
-        <button class="leave-btn" onclick="leaveRoom()">退出</button>
+        <span style="font-size:12px; color:var(--neon-pink);">好感度: 100%</span>
     </div>
 
-    <div class="line-call-panel">
-        <div class="call-panel-header">
-            <span>📞 群组通话人员状态监视器</span>
-            <span style="color:var(--line-green); font-weight:bold;">● 实时混音中</span>
-        </div>
-        <div class="call-users-grid" id="callUsersGrid">
-            </div>
-    </div>
+    <div class="seats-grid" id="seatsGrid"></div>
 
     <div class="chat-area" id="chatArea">
-        <div class="msg-system">欢迎加入 LINE 极简通讯房。已挂载声网 4.22 商业级高保真全双工核心。点击底部电话图标上麦语音。</div>
+        <div class="msg-system">【广播】欢迎进入秘密房间。双击任意人的麦位可执行「拍一拍」；下方有游戏专属趣味互动。</div>
     </div>
 
-    <div class="emoji-tray" id="emojiTray">
-        <span class="tray-emoji-item" onclick="insertEmoji('😂')">😂</span>
-        <span class="tray-emoji-item" onclick="insertEmoji('👍')">👍</span>
-        <span class="tray-emoji-item" onclick="insertEmoji('🔥')">🔥</span>
-        <span class="tray-emoji-item" onclick="insertEmoji('❤️')">❤️</span>
-        <span class="tray-emoji-item" onclick="insertEmoji('🎉')">🎉</span>
-        <span class="tray-emoji-item" onclick="insertEmoji('😮')">😮</span>
-        <span class="tray-emoji-item" onclick="insertEmoji('🤔')">🤔</span>
-        <span class="tray-emoji-item" onclick="insertEmoji('👑')">👑</span>
+    <div class="game-feature-panel">
+        <span class="feat-btn" onclick="sendQuickEmoji('🙏 阿门')">🙏 阿门</span>
+        <span class="feat-btn" onclick="sendQuickEmoji('💗 喜欢')">💗 喜欢</span>
+        <span class="feat-btn sc" onclick="triggerSuperChat()">💰 发送SC赤字</span>
+        <span class="feat-btn meds" onclick="triggerTakeMeds()">💊 精神安定剂</span>
     </div>
 
     <div class="bottom-bar">
-        <div class="bar-icon-btn" onclick="document.getElementById('chatImgInput').click()">📁</div>
-        <input type="file" id="chatImgInput" accept="image/*" style="display: none;" onchange="handleSendImage(this)">
+        <div class="btn-icon" id="micBtn" onclick="toggleMic()">🔇</div>
+        <div class="bar-icon" onclick="document.getElementById('imageFileSlot').click()">🖼️</div>
+        <input type="file" id="imageFileSlot" accept="image/*" style="display:none;" onchange="transmitChatImage(this)">
         
-        <div class="bar-icon-btn" onclick="toggleEmojiTray()">☺</div>
-        
-        <input type="text" class="input-box line-input-box" id="msgInput" placeholder="请输入消息..." autocomplete="off">
-        
-        <div class="line-call-toggle" id="callToggleBtn" onclick="toggleLineVoiceCall()">📞</div>
+        <input type="text" class="input-box" id="msgInput" placeholder="给糖糖发消息..." autocomplete="off">
+        <button class="enter-btn" style="padding:10px 16px; font-size:13px;" onclick="sendMsg()">发送</button>
     </div>
 </div>
 
 <script>
-    const DEFAULT_SVG_INNER = `<path d="M512 512c141.4 0 256-114.6 256-256S653.4 0 512 0 256 114.6 256 256s114.6 256 256 256zM512 614.4c-243.2 0-512 121.6-512 364.8v44.8h1024v-44.8c0-243.2-268.8-364.8-512-364.8z" fill="#b2b2b2"/>`;
-    
-    // 固定的项目配置
+    const DEFAULT_SVG = `<svg viewBox="0 0 1024 1024"><path d="M512 512c141.4 0 256-114.6 256-256S653.4 0 512 0 256 114.6 256 256s114.6 256 256 256zM512 614.4c-243.2 0-512 121.6-512 364.8v44.8h1024v-44.8c0-243.2-268.8-364.8-512-364.8z" fill="#4a3e6d"/></svg>`;
     const AGORA_APP_ID = "3adf636b90314ac3901887e1560c0db5"; 
-    const CHANNEL_NAME = "line_premium_voice_999";
+    const CHANNEL_NAME = "needy_streamer_angel_999";
 
-    let mqttClient = null;
-    let agoraClient = null;
-    let localAudioTrack = null;
+    let mqttClient = null, agoraClient = null, localAudioTrack = null;
+    let myName = "", myCustomAvatar = "", myAgoraUid = 0, isMuted = true, currentZoomScale = 1;
+    let roomUsers = {};
 
-    let myName = "";
-    let myAgoraUid = 0; 
-    let myAvatarBase64 = "";
-    let isCalling = false; // 是否加入了语音通话
-    let isAdminHost = false; // 是否是房主管理员
-    let roomUsers = {}; 
+    // 微信特权音频通道解锁
+    document.addEventListener("WeixinJSBridgeReady", function () {
+        const fakeCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if(fakeCtx) fakeCtx.resume();
+    }, false);
 
-    // 图像极限无损画布压缩算法 (适配公共MQTT大小包控流限制)
-    function compressImageBlob(file, maxBound, quality, callback) {
+    // 图片无损画布压缩，防MQTT报文超载卡死
+    function resizeImg(file, bound, callback) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            const tempImg = new Image();
-            tempImg.onload = function() {
-                const canvas = document.createElement('canvas');
-                let w = tempImg.width; let h = tempImg.height;
-                if (w > h) {
-                    if (w > maxBound) { h *= maxBound / w; w = maxBound; }
-                } else {
-                    if (h > maxBound) { w *= maxBound / h; h = maxBound; }
-                }
-                canvas.width = w; canvas.height = h;
-                canvas.getContext('2d').drawImage(tempImg, 0, 0, w, h);
-                callback(canvas.toDataURL('image/jpeg', quality));
+            const img = new Image();
+            img.onload = function() {
+                const cvs = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if (w > h) { if (w > bound) { h *= bound / w; w = bound; } }
+                else { if (h > bound) { w *= bound / h; h = bound; } }
+                cvs.width = w; cvs.height = h;
+                cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+                callback(cvs.toDataURL('image/jpeg', 0.7));
             }
-            tempImg.src = e.target.result;
+            img.src = e.target.result;
         }
         reader.readAsDataURL(file);
     }
 
-    function handleAvatarUpload(input) {
+    function loadCustomAvatar(input) {
         if(!input.files || !input.files[0]) return;
-        compressImageBlob(input.files[0], 120, 0.8, function(base64Output) {
-            myAvatarBase64 = base64Output;
-            document.getElementById('avatarPreview').innerHTML = `<img src="${base64Output}">`;
+        resizeImg(input.files[0], 100, function(b64) {
+            myCustomAvatar = b64;
+            document.getElementById('avatarPreview').innerHTML = `<img src="${b64}">`;
         });
     }
 
-    function handleSendImage(input) {
+    function transmitChatImage(input) {
         if(!input.files || !input.files[0]) return;
-        compressImageBlob(input.files[0], 280, 0.7, function(compressedBase64) {
-            publishLinePacket({ type: 'img', sender: myName, avatar: myAvatarBase64, payload: compressedBase64 });
+        resizeImg(input.files[0], 240, function(b64) {
+            publishLinePacket({ type: 'img', sender: myName, avatar: myCustomAvatar, payload: b64 });
         });
         input.value = '';
     }
 
-    function toggleEmojiTray() {
-        const tray = document.getElementById('emojiTray');
-        tray.style.display = tray.style.display === 'flex' ? 'none' : 'flex';
+    // 按钮功能 1：图片点击进行全屏查看与多档放大缩小
+    function openLightbox(src) {
+        const modal = document.getElementById('lightboxModal');
+        const img = document.getElementById('targetLightboxImg');
+        img.src = src;
+        modal.style.display = 'flex';
+        resetImageZoom();
+    }
+    function closeLightbox() {
+        document.getElementById('lightboxModal').style.display = 'none';
+    }
+    function adjustImageZoom(step) {
+        currentZoomScale = Math.max(0.4, Math.min(4, currentZoomScale + step));
+        document.getElementById('lightboxImgWrap').style.transform = `scale(${currentZoomScale})`;
+    }
+    function resetImageZoom() {
+        currentZoomScale = 1;
+        document.getElementById('lightboxImgWrap').style.transform = 'scale(1)';
     }
 
-    function insertEmoji(emoji) {
-        const input = document.getElementById('msgInput');
-        input.value += emoji; input.focus();
+    // 按钮功能 2：发送快捷动作文本表情
+    function sendQuickEmoji(val) {
+        publishLinePacket({ type: 'chat', sender: myName, avatar: myCustomAvatar, payload: val });
     }
 
-    // 初始化运行入口
-    function initializeLineEnvironment() {
-        const inputName = document.getElementById('nicknameInput').value.trim();
-        if(!inputName) { alert("请输入群聊名字！"); return; }
-        myName = inputName;
-        isAdminHost = document.getElementById('isHostMode').checked;
+    // 按钮功能 3：糖糖发赤字超赞（Super Chat）
+    function triggerSuperChat() {
+        const money = Math.floor(Math.random() * 899) + 100;
+        publishLinePacket({ type: 'sc', sender: myName, amount: money });
+    }
+
+    // 按钮功能 4：喂药特色物理障眼法效果（全屏Glitch闪烁）
+    function triggerTakeMeds() {
+        publishLinePacket({ type: 'meds', sender: myName });
+    }
+
+    function launchAngelRoom() {
+        const nameInput = document.getElementById('nicknameInput').value.trim();
+        if(!nameInput) { alert("起一个可爱的网名吧！"); return; }
+        myName = nameInput;
         
-        // 核心技术纠偏：生成合法的纯数字 ASCII UID，彻底避免中文网名导致声网 INVALID_PARAMS 报错卡死
+        // 核心纠偏：转换为纯数字合法 UID 接入声网，完美解决中文名字导致无声崩溃的 Bug
         myAgoraUid = Math.floor(Math.random() * 89999) + 10000;
 
         document.getElementById('loginOverlay').style.display = 'none';
+        renderBlankSeats();
 
-        initMqttSyncGateway();
-        initAgoraAudioEngine();
+        initMqttSync();
+        initAgoraVoice();
 
-        // 绑定输入框和手机回车发送键动作
         document.getElementById('msgInput').addEventListener('keypress', function(e) {
             if(e.key === 'Enter') { sendMsg(); this.blur(); }
         });
     }
 
-    // 远端房主禁言裁决执行
-    function invokeAdminMuteKill(targetName) {
-        if(!isAdminHost) {
-            alert("操作失败：您当前不是房间的高阶管理员(房主)！");
-            return;
-        }
-        if(targetName === myName) return;
-        if(confirm(`【LINE管理员权限】确定要强制切断并关闭 [${targetName}] 的全网麦克风吗？`)) {
-            publishLinePacket({ type: 'admin_kill_mic', target: targetName });
+    function renderBlankSeats() {
+        const grid = document.getElementById('seatsGrid');
+        grid.innerHTML = '';
+        for(let i = 1; i <= 8; i++) {
+            grid.innerHTML += `
+                <div class="seat-item" id="seat_${i}">
+                    <div class="seat-pop-effect" id="pop_${i}">🎉</div>
+                    <div class="seat-avatar-wrap">
+                        ${DEFAULT_SVG}
+                        <span class="seat-index">${i===1?'糖糖':i+'麦'}</span>
+                    </div>
+                    <span class="user-name">网络幽灵</span>
+                </div>
+            `;
         }
     }
 
-    // --- 🍏 LINE 风格极简数据网关同步层 ---
-    function initMqttSyncGateway() {
+    // 核心功能 5：双击执行「拍一拍」并触发头像物理摇晃动画
+    function bindPokeEventToSeats() {
+        const users = Object.keys(roomUsers);
+        users.forEach((username, idx) => {
+            if(idx >= 8) return;
+            const seatDom = document.getElementById(`seat_${idx + 1}`);
+            if(seatDom) {
+                // 解绑老事件防止重叠
+                seatDom.ondblclick = null;
+                // 绑定全新的双击事件
+                seatDom.ondblclick = () => {
+                    publishLinePacket({ type: 'poke', trigger: myName, target: username });
+                };
+            }
+        });
+    }
+
+    // --- 数据同步层（打通打字、自定义头像、SC、喂药、拍一拍） ---
+    function initMqttSync() {
         const brokerUrl = 'wss://broker.emqx.io:8084/mqtt'; 
-        mqttClient = mqtt.connect(brokerUrl, { connectTimeout: 5000, clientId: 'line_cl_' + Math.random().toString(16).substr(2, 7) });
+        mqttClient = mqtt.connect(brokerUrl, { connectTimeout: 5000, clientId: 'angel_' + Math.random().toString(16).substr(2, 7) });
 
         mqttClient.on('connect', () => {
             mqttClient.subscribe(CHANNEL_NAME);
-            // 进场握手：向全网宣告自己的中文网名、自定义头像及通信 UID
-            publishLinePacket({ type: 'handshake', user: myName, agoraUid: myAgoraUid, avatar: myAvatarBase64, calling: isCalling });
+            publishLinePacket({ type: 'join', user: myName, agoraUid: myAgoraUid, avatar: myCustomAvatar, isMuted: isMuted });
         });
 
         mqttClient.on('message', (topic, packet) => {
             try {
                 const data = JSON.parse(packet.toString());
-                
-                if (data.type === 'handshake') {
-                    roomUsers[data.user] = { agoraUid: data.agoraUid, avatar: data.avatar, calling: data.calling };
-                    refreshCallPanelLayout();
-                    appendSystemNotice(`${data.user} 加入了群组聊天`);
+                if (data.type === 'join') {
+                    roomUsers[data.user] = { agoraUid: data.agoraUid, avatar: data.avatar, isMuted: data.isMuted };
+                    refreshSeats();
+                    appendSystemNotice(`【通知】${data.user} 浮出网海加入房间`);
                     if(data.user !== myName) {
-                        publishLinePacket({ type: 'handshake_reply', user: myName, agoraUid: myAgoraUid, avatar: myAvatarBase64, calling: isCalling });
+                        publishLinePacket({ type: 'sync_resp', user: myName, agoraUid: myAgoraUid, avatar: myCustomAvatar, isMuted: isMuted });
                     }
                 } 
-                else if (data.type === 'handshake_reply') {
-                    roomUsers[data.user] = { agoraUid: data.agoraUid, avatar: data.avatar, calling: data.calling };
-                    refreshCallPanelLayout();
+                else if (data.type === 'sync_resp') {
+                    roomUsers[data.user] = { agoraUid: data.agoraUid, avatar: data.avatar, isMuted: data.isMuted };
+                    refreshSeats();
                 }
                 else if (data.type === 'chat') {
-                    appendLineBubble(data.sender, data.avatar, data.payload, false);
+                    appendChatBubble(data.sender, data.avatar, data.payload, false);
                 }
                 else if (data.type === 'img') {
-                    appendLineBubble(data.sender, data.avatar, data.payload, true);
+                    appendChatBubble(data.sender, data.avatar, data.payload, true);
                 }
-                else if (data.type === 'call_state') {
-                    if(roomUsers[data.user]) roomUsers[data.user].calling = data.calling;
-                    refreshCallPanelLayout();
+                else if (data.type === 'mic') {
+                    if(roomUsers[data.user]) roomUsers[data.user].isMuted = data.isMuted;
+                    refreshSeats();
                 }
-                // 被最高管理员降维打击禁言
-                else if (data.type === 'admin_kill_mic') {
-                    if(data.target === myName && isCalling) {
-                        alert("【LINE管理提示】你已被管理员强制断开连麦！");
-                        toggleLineVoiceCall(); // 自动下麦执行
-                    }
+                // 收到全网拍一拍动作
+                else if (data.type === 'poke') {
+                    appendSystemNotice(`✨【拍一拍】${data.trigger} 拍了拍 ${data.target} 的双马尾，并说：阿美莉卡大红心！`);
+                    triggerSeatShakeAnimation(data.target, "⚡ 绝赞");
+                }
+                // 收到全网SC动作
+                else if (data.type === 'sc') {
+                    appendSuperChatMsg(data.sender, data.amount);
+                }
+                // 收到全网喂药动作
+                else if (data.type === 'meds') {
+                    triggerMedsGlitchOverlay(data.sender);
                 }
                 else if (data.type === 'leave') {
                     delete roomUsers[data.user];
-                    refreshCallPanelLayout();
+                    refreshSeats();
                 }
             } catch (e) {}
         });
     }
 
-    // 重构高仿 LINE 群组通话正在进行中的头像矩阵列表
-    function refreshCallPanelLayout() {
-        const grid = document.getElementById('callUsersGrid');
-        grid.innerHTML = '';
-        const allOnlineUsers = Object.keys(roomUsers);
-        
-        allOnlineUsers.forEach(username => {
-            const uData = roomUsers[username];
-            const isUserInCall = uData.calling;
-            
-            // 构造头像形态
-            let avatarHtml = uData.avatar ? `<img src="${uData.avatar}">` : `<svg viewBox="0 0 1024 1024">${DEFAULT_SVG_INNER}</svg>`;
-            let micBadgeHtml = isUserInCall ? `<span class="mic-status-badge open">✓</span>` : `<span class="mic-status-badge">✕</span>`;
-
-            grid.innerHTML += `
-                <div class="call-user-item" id="call_uid_${uData.agoraUid}">
-                    <div class="admin-action-mask" onclick="invokeAdminMuteKill('${username}')">禁言</div>
-                    <div class="call-avatar-wrap">
-                        ${avatarHtml}
-                    </div>
-                    ${micBadgeHtml}
-                    <span class="call-user-name">${username}</span>
-                </div>
-            `;
+    function refreshSeats() {
+        renderBlankSeats();
+        const users = Object.keys(roomUsers);
+        users.forEach((username, index) => {
+            if(index >= 8) return;
+            const seatDom = document.getElementById(`seat_${index + 1}`);
+            if(seatDom) {
+                const avatarWrap = seatDom.querySelector('.seat-avatar-wrap');
+                if(roomUsers[username].avatar) {
+                    avatarWrap.innerHTML = `<img src="${roomUsers[username].avatar}"><span class="seat-index">${index===0?'糖糖':(index+1)+'麦'}</span>`;
+                } else {
+                    avatarWrap.innerHTML = `${DEFAULT_SVG}<span class="seat-index">${index===0?'糖糖':(index+1)+'麦'}</span>`;
+                }
+                const nameSpan = seatDom.querySelector('.user-name');
+                nameSpan.innerText = username;
+                nameSpan.style.color = "#ffffff";
+                if(!roomUsers[username].isMuted) nameSpan.innerText += " 🎙️";
+            }
         });
+        // 动态重绑拍一拍
+        bindPokeEventToSeats();
     }
 
-    // --- 🔊 声网商业级全平台高保真语音驱动引擎 ---
-    async function initAgoraAudioEngine() {
+    // 头像物理摇晃跟文本冒泡
+    function triggerSeatShakeAnimation(username, text) {
+        const users = Object.keys(roomUsers);
+        const index = users.indexOf(username);
+        if(index !== -1 && index < 8) {
+            const seatDom = document.getElementById(`seat_${index + 1}`);
+            const popDom = document.getElementById(`pop_${index + 1}`);
+            if(seatDom && popDom) {
+                seatDom.classList.add('shake-animation');
+                popDom.innerText = text; popDom.style.display = 'block';
+                setTimeout(() => { seatDom.classList.remove('shake-animation'); }, 400);
+                setTimeout(() => { popDom.style.display = 'none'; }, 2500);
+            }
+        }
+    }
+
+    function triggerMedsGlitchOverlay(user) {
+        appendSystemNotice(`💊【精神安定】${user} 给超天酱递过去了精神安定剂！`);
+        triggerSeatShakeAnimation(user, "💊 嗑药");
+        const overlay = document.getElementById('glitchOverlay');
+        overlay.style.display = 'block';
+        setTimeout(() => { overlay.style.display = 'none'; }, 2000); // 迷幻特效持续2秒
+    }
+
+    // --- 声网商业级真语音（解决全端无声、跨网拥堵） ---
+    async function initAgoraVoice() {
         try {
             agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
-            // 监听全网连麦人员拉流动作
             agoraClient.on("user-published", async (user, mediaType) => {
                 await agoraClient.subscribe(user, mediaType);
-                if (mediaType === "audio") {
-                    user.audioTrack.play(); // 强行拉通播放，免去iOS二次封堵拦截
-                }
+                if (mediaType === "audio") { user.audioTrack.play(); }
             });
 
-            // 智能音量波形分贝监测（用于对齐触发 LINE 经典的绿圈发光动画）
+            // 高敏分贝捕获（对齐触发糖糖经典的霓虹青说话发光 border）
             agoraClient.enableAudioVolumeIndicator();
             agoraClient.on("volume-indicator", volumes => {
                 volumes.forEach(vol => {
-                    const targetGridItem = document.getElementById(`call_uid_${vol.uid}`);
-                    if(targetGridItem) {
-                        targetGridItem.classList.toggle('speaking', vol.level > 6);
+                    const users = Object.keys(roomUsers);
+                    const targetName = users.find(name => roomUsers[name].agoraUid == vol.uid);
+                    const index = users.indexOf(targetName);
+                    if(index !== -1 && index < 8) {
+                        const seatDom = document.getElementById(`seat_${index + 1}`);
+                        if(seatDom) seatDom.classList.toggle('speaking', vol.level > 6);
                     }
                 });
             });
 
-        } catch (e) {
-            alert("声网引擎装载失败，请检查是否处于 HTTPS 安全域名链条下！");
-        }
+            await agoraClient.join(AGORA_APP_ID, CHANNEL_NAME, null, myAgoraUid);
+            appendSystemNotice("🔊 【通知】声网商业合流引擎就绪。");
+
+        } catch (e) { alert("声网加载失败，请确保当前在 HTTPS 线上链接下打开！"); }
     }
 
-    // 点击 LINE 标志性电话控制上麦动作
-    async function toggleLineVoiceCall() {
-        if(!agoraClient) { alert("语音链路未启动"); return; }
-        const btn = document.getElementById('callToggleBtn');
-
-        if(!isCalling) {
-            // 执行加入通话动作
-            try {
-                btn.innerText = "⏳";
-                // 加入声网语音群组房间
-                await agoraClient.join(AGORA_APP_ID, CHANNEL_NAME, null, myAgoraUid);
-                
-                // 启动本地硬件音频采集轨道，注入高级噪声控制及回声降噪
+    async function toggleMic() {
+        if(!agoraClient) return;
+        isMuted = !isMuted;
+        const btn = document.getElementById('micBtn');
+        try {
+            if(!localAudioTrack) {
                 localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ AEC: true, ANS: true, AGC: true });
                 await agoraClient.publish([localAudioTrack]);
-
-                isCalling = true;
-                btn.innerText = "挂断";
-                btn.className = "line-call-toggle active"; // 红色状态
-                appendSystemNotice("你已成功接入 LINE 多人互连语音通话流");
-
-            } catch (err) {
-                isCalling = false;
-                btn.innerText = "📞";
-                btn.className = "line-call-toggle";
-                alert("连麦通话失败！请务必检查系统麦克风录音权限是否已放行。");
-                return;
             }
-        } else {
-            // 执行断开下麦动作
-            if(localAudioTrack) {
-                localAudioTrack.getTracks().forEach(track => track.stop());
-                localAudioTrack = null;
-            }
-            await agoraClient.leave();
-            isCalling = false;
-            btn.innerText = "📞";
-            btn.className = "line-call-toggle";
-            appendSystemNotice("你已挂断并退出了当前的语音通话");
-        }
-
-        // 全网数据广播同步自己的通话状态
-        publishLinePacket({ type: 'call_state', user: myName, calling: isCalling });
+            await localAudioTrack.setEnabled(!isMuted);
+            btn.innerText = isMuted ? "🔇" : "🎤";
+            btn.classList.toggle('active', isMuted);
+            appendSystemNotice(isMuted ? "你已闭麦下线" : "麦克风已强制加载，你现在正在实时开麦中！");
+            publishLinePacket({ type: 'mic', user: myName, isMuted: isMuted });
+        } catch (err) { isMuted = true; alert("麦克风权限被设备拦截！请在系统隐私中允许微信/浏览器录音。"); }
     }
 
     function sendMsg() {
         const input = document.getElementById('msgInput');
         const text = input.value.trim();
         if(!text) return;
-        publishLinePacket({ type: 'chat', sender: myName, avatar: myAvatarBase64, payload: text });
+        publishLinePacket({ type: 'chat', sender: myName, avatar: myCustomAvatar, payload: text });
         input.value = '';
     }
 
     function publishLinePacket(obj) {
-        if(mqttClient && mqttClient.connected) {
-            mqttClient.publish(CHANNEL_NAME, JSON.stringify(obj), { qos: 0 });
-        }
+        if(mqttClient && mqttClient.connected) mqttClient.publish(CHANNEL_NAME, JSON.stringify(obj), { qos: 0 });
     }
 
-    // 像素级高度重绘 LINE 清新风对话框及气泡
-    function appendLineBubble(sender, avatarB64, content, isImg) {
+    function appendChatBubble(sender, avatarB64, content, isImg) {
         const chatArea = document.getElementById('chatArea');
         const isSelf = sender === myName;
         
         const row = document.createElement('div');
         row.className = `bubble-row ${isSelf ? 'self' : 'other'}`;
 
-        // 1. 头像组件渲染
         if(!isSelf) {
-            if(avatarB64) {
-                row.innerHTML += `<img class="chat-avatar" src="${avatarB64}">`;
-            } else {
-                row.innerHTML += `<svg class="chat-avatar-svg" viewBox="0 0 1024 1024">${DEFAULT_SVG_INNER}</svg>`;
-            }
+            row.innerHTML += avatarB64 ? `<img class="msg-avatar" src="${avatarB64}">` : `<div class="msg-avatar" style="background:#221a36; display:flex; align-items:center; justify-content:center;">🛸</div>`;
         }
 
-        // 2. 气泡及元数据组合体
-        const contentWrap = document.createElement('div');
-        contentWrap.className = 'bubble-content-wrap';
-        if(!isSelf) {
-            contentWrap.innerHTML += `<span class="bubble-user-name">${sender}</span>`;
-        }
+        const bodyWrap = document.createElement('div');
+        bodyWrap.className = 'msg-body-wrap';
+        if(!isSelf) bodyWrap.innerHTML += `<span class="msg-username">${sender}</span>`;
 
-        const bubbleMain = document.createElement('div');
-        bubbleMain.className = 'line-bubble';
+        const bubble = document.createElement('div');
+        bubble.className = 'line-bubble';
 
         if(isImg) {
-            const imgDom = document.createElement('img');
-            imgDom.className = 'chat-img';
-            imgDom.src = content;
-            imgDom.onclick = () => window.open(content);
-            bubbleMain.appendChild(imgDom);
+            const img = document.createElement('img');
+            img.className = 'chat-img';
+            img.src = content;
+            // 完美点击响应：点开调用高级灯箱放大缩小模态窗
+            img.onclick = () => openLightbox(content);
+            bubble.appendChild(img);
         } else {
-            const txtSpan = document.createElement('span');
-            txtSpan.textContent = content; // 防范 XSS 恶意脚本
-            bubbleMain.appendChild(txtSpan);
+            const txt = document.createElement('span');
+            txt.textContent = content;
+            bubble.appendChild(txt);
         }
 
-        // 获取格式化时间戳
-        const now = new Date();
-        const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        const metaSpan = `<span class="bubble-meta">${isSelf ? '已读<br>'+timeStr : timeStr}</span>`;
-
-        // 拼接节点排列顺序
-        contentWrap.appendChild(bubbleMain);
-        
-        if(isSelf) {
-            row.innerHTML += metaSpan;
-            row.appendChild(contentWrap);
-        } else {
-            row.appendChild(contentWrap);
-            row.innerHTML += metaSpan;
-        }
-
+        bodyWrap.appendChild(bubble);
+        row.appendChild(bodyWrap);
         chatArea.appendChild(row);
         chatArea.scrollTo({ top: chatArea.scrollHeight, behavior: 'smooth' });
+    }
+
+    function appendSuperChatMsg(sender, amount) {
+        const chatArea = document.getElementById('chatArea');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'msg-superchat';
+        msgDiv.innerHTML = `💸 SuperChat 赤字：[${sender}] 向 OMGkawaiiAngel 狂热打赏了 ￥${amount} 元！并高呼：阿美莉卡大红心！！！`;
+        chatArea.appendChild(msgDiv);
+        chatArea.scrollTo({ top: chatArea.scrollHeight, behavior: 'smooth' });
+        triggerSeatShakeAnimation(sender, `💸 ￥${amount}`);
     }
 
     function appendSystemNotice(text) {
@@ -632,12 +617,7 @@
         chatArea.scrollTop = chatArea.scrollHeight;
     }
 
-    function leaveRoom() {
-        if(confirm('确定断开连接并返回 LINE 档案首页吗？')) {
-            publishLinePacket({ type: 'leave', user: myName });
-            window.location.reload();
-        }
-    }
+    function leaveRoom() { if(confirm('要退回大统一局域网吗？')) { publishLinePacket({ type: 'leave', user: myName }); window.location.reload(); } }
 </script>
 </body>
 </html>
