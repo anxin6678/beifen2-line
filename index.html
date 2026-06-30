@@ -59,12 +59,12 @@
         .volume-row { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #666; }
         .vol-slider { flex: 1; accent-color: var(--line-cyan); height: 4px; cursor: pointer; }
         
-        /* 水平排列内嵌文字分类图标 */
+        /* 水平排列且文字内嵌在圈内的分类图标 */
         .category-circle-ribbon { display: flex; justify-content: space-around; align-items: center; padding: 15px 10px; background: #fff; border-bottom: 8px solid #f4f7f9; }
         .meta-text-circle { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #e0f2fe, #ebdffd); border: 1.5px solid #bae6fd; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; color: #0369a1; cursor: pointer; transition: transform 0.1s; letter-spacing: -0.5px; }
         .meta-text-circle:active { transform: scale(0.92); }
 
-        /* 好友列表行 */
+        /* 好友流 */
         .seats-list-container { background: #ffffff; display: flex; flex-direction: column; flex-shrink: 0; }
         .list-section-title { font-size: 11px; color: #8e9aa2; padding: 10px 16px 4px 16px; font-weight: bold; }
         .seat-row-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f6f9fa; cursor: pointer; position: relative; }
@@ -87,12 +87,28 @@
         .portal-meta p { font-size: 11.5px; color: #8e9aa2; margin-top: 4px; }
         .portal-badge-right { background: #ff3b30; color: #fff; font-size: 10px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: flex; justify-content: center; align-items: center; padding: 0 4px; }
 
-        /* 顶级独立蓝灰会话舞台 */
-        .active-chat-stage { position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - calc(50px + env(safe-area-inset-bottom))); background: #8b9bb4; z-index: 2000; display: none; flex-direction: column; }
+        /* 🪐 核心重塑：地雷病娇系高级暗黑粉格纹十字纹章壁纸衬底 */
+        .active-chat-stage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - calc(50px + env(safe-area-inset-bottom)));
+            background-color: #17141d;
+            background-image:
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 10v14h14v2h-12v20h-2v-20h-12v-2h12v-14z' fill='%23ec4899' fill-opacity='0.07'/%3E%3C/svg%3E"),
+                linear-gradient(rgba(236, 72, 153, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(236, 72, 153, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px, 20px 20px, 20px 20px;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+        }
+        
         .stage-header { background: #ffffff; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e5e5; flex-shrink: 0; }
         .stage-header h4 { font-size: 15px; font-weight: bold; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .stage-scroller { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; -webkit-overflow-scrolling: touch; }
-        .stage-system-node { background: rgba(0,0,0,0.15); color: #fff; font-size: 11px; padding: 4px 14px; border-radius: 12px; align-self: center; text-align: center; }
+        .stage-system-node { background: rgba(255,255,255,0.08); border: 1px dashed rgba(255,0,127,0.3); color: #fbcfe8; font-size: 11px; padding: 5px 14px; border-radius: 12px; align-self: center; text-align: center; }
 
         .voice-stream-ribbon { background: #ffffff; padding: 6px 16px; border-bottom: 1px solid #edf2f5; display: flex; flex-direction: column; flex-shrink: 0; display: none; }
         .voice-row-node { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f6f9fa; }
@@ -100,37 +116,30 @@
         .voice-node-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .voice-row-node.speaking .voice-node-avatar { border-color: var(--line-green); box-shadow: 0 0 8px rgba(6,199,85,0.5); }
 
-        /* ================= ✨ 核心视觉整容：高级感微渐变聊天气泡流 ================= */
+        /* 🎀 气泡美化层：高度还原地雷妹专属高粉黑微度立体圆角微渐变 */
         .bubble-combo { display: flex; gap: 10px; max-width: 88%; align-items: flex-end; position: relative; }
         .bubble-combo.self { align-self: flex-end; flex-direction: row-reverse; }
         .bubble-combo.other { align-self: flex-start; }
         
-        .bubble-avatar-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1.5px solid #fff; }
+        .bubble-avatar-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.2); border: 1.5px solid #fff; }
         .bubble-core-wrap { display: flex; flex-direction: column; gap: 4px; }
         .bubble-combo.self .bubble-core-wrap { align-items: flex-end; }
-        .bubble-core-name { font-size: 11px; color: rgba(255,255,255,0.85); font-weight: 500; margin-left: 2px; }
+        .bubble-core-name { font-size: 11px; color: rgba(255,255,255,0.75); font-weight: 500; margin-left: 2px; }
         
-        /* 气泡本体高精重构 */
-        .bubble-body { padding: 10px 15px; border-radius: 18px; font-size: 14px; line-height: 1.45; word-break: break-all; box-shadow: 0 3px 12px rgba(28,45,55,0.08); transition: all 0.2s ease; position: relative; }
-        .bubble-combo.other .bubble-body { background: #ffffff; color: #1c2d37; border-top-left-radius: 4px; }
+        .bubble-body { padding: 11px 16px; border-radius: 18px; font-size: 14px; line-height: 1.45; word-break: break-all; box-shadow: 0 4px 15px rgba(0,0,0,0.25); }
+        .bubble-combo.other .bubble-body { background: #ffffff; color: #1c2d37; border-top-left-radius: 4px; border: 1px solid #fbcfe8; }
         
-        /* 自己发送的：采用高饱和微度立体渐变绿 */
-        .bubble-combo.self .bubble-body { background: linear-gradient(135deg, #a3e635 0%, #06c755 100%); color: #ffffff; border-top-right-radius: 4px; }
+        /* 己方气泡：变为炫彩病娇高保真微度深粉渐变 */
+        .bubble-combo.self .bubble-body { background: linear-gradient(135deg, #f472b6 0%, #db2777 100%); color: #ffffff; border-top-right-radius: 4px; }
         
-        /* LINE大贴图特制无边框无背景属性 */
         .line-big-sticker-node { max-width: 120px !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; font-size: 65px !important; line-height: 1; text-align: center; }
-
-        /* 阅后即焚专属黑耀晶迷幻动效 */
-        .bubble-combo.burn-mode .bubble-body { background: linear-gradient(135deg, #24242b 0%, #0f0f12 100%) !important; color: #ff007f !important; font-weight: bold; border: 1px solid #ff007f; box-shadow: 0 0 14px rgba(255,0,127,0.25); cursor: pointer; }
+        .bubble-combo.burn-mode .bubble-body { background: linear-gradient(135deg, #24242b 0%, #0f0f12 100%) !important; color: #ff007f !important; font-weight: bold; border: 1px solid #ff007f; box-shadow: 0 0 14px rgba(255,0,127,0.4); cursor: pointer; }
         
-        /* 时间戳与「已讀」高保真对流排布 */
-        .bubble-timestamp { font-size: 10px; align-self: flex-end; margin: 0 4px; white-space: nowrap; line-height: 1.3; font-family: -apple-system, sans-serif; color: rgba(255,255,255,0.65); }
-        .bubble-combo.self .bubble-timestamp { text-align: right; color: rgba(235, 223, 253, 0.75); }
-        
-        /* 已读状态青荧光色强化 */
+        .bubble-timestamp { font-size: 10px; align-self: flex-end; margin: 0 4px; white-space: nowrap; line-height: 1.3; color: rgba(255,255,255,0.5); }
+        .bubble-combo.self .bubble-timestamp { text-align: right; color: rgba(251, 207, 232, 0.75); }
         .line-read-badge { color: #00ffff !important; display: block; font-weight: bold; text-align: right; letter-spacing: 0.5px; }
 
-        /* 大表情贴图抽屉 */
+        /* 贴图大厅托盘 */
         .line-sticker-tray { background: #f4f5f7; border-top: 1px solid #dcd1ed; display: none; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 12px; height: 110px; overflow-y: auto; flex-shrink: 0; z-index: 2200; }
         .sticker-unit { font-size: 38px; text-align: center; cursor: pointer; transition: transform 0.1s; display: flex; justify-content: center; align-items: center; }
         .sticker-unit:active { transform: scale(0.85); }
@@ -148,7 +157,7 @@
         .retro-win95-title { background: linear-gradient(90deg, #9d4edd, #ff007f); padding: 6px 12px; font-size: 11px; font-weight: bold; color: #fff; display: flex; justify-content: space-between; }
         .app-tool-btn { background: #fff; border: 1px solid #dcd1ed; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; font-weight: bold; color: #5c4e75; cursor: pointer; text-align: center; margin-top: 8px; width: 100%; }
 
-        /* Bottom Navbar */
+        /* Navbar */
         .bottom-pixel-navbar { background: var(--purple-nav); padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #dcd1ed; flex-shrink: 0; z-index: 900; }
         .nav-tab-trigger { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #5c4e75; cursor: pointer; flex: 1; text-decoration: none; position: relative; }
         .nav-tab-trigger.active { color: var(--neon-pink); font-weight: bold; }
@@ -156,13 +165,12 @@
         .nav-tab-trigger span { font-size: 10px; }
         .nav-red-badge { position: absolute; top: -4px; right: 16px; background: #ff3b30; color: white; font-size: 9px; font-weight: bold; min-width: 15px; height: 15px; border-radius: 10px; display: flex; justify-content: center; align-items: center; padding: 0 3px; }
 
-        /* Lightbox */
+        /* 灯箱 */
         .lightbox-sandbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,14,20,0.97); z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .sandbox-wrap { max-width: 90%; max-height: 75%; display: flex; justify-content: center; align-items: center; transition: transform 0.1s ease; }
         .sandbox-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; border: 2px solid var(--neon-pink); box-shadow: 0 0 30px rgba(255,0,127,0.3); }
         .sandbox-dock { position: absolute; bottom: 35px; display: flex; gap: 25px; background: rgba(255,255,255,0.08); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
         .dock-ctrl { background: transparent; border: none; color: var(--neon-cyan); font-size: 18px; cursor: pointer; width: 30px; font-weight: bold; }
-        
         .glitch-mask { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,0,127,0.15); z-index: 9998; mix-blend-mode: overlay; pointer-events: none; display: none; animation: flashEffect 0.15s infinite; }
         @keyframes pulseGlow { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
         @keyframes flashEffect { 0% { opacity: 0.2; } 50% { opacity: 0.5; } 100% { opacity: 0.2; } }
@@ -182,7 +190,6 @@
     </div>
 </div>
 
-<!-- 进场建档 -->
 <div class="identity-overlay" id="identityOverlay">
     <div class="identity-card">
         <h2 style="text-align: center; letter-spacing: 0.5px;">LINE 无服务大厅建档</h2>
@@ -203,7 +210,6 @@
     </div>
 
     <div class="tab-view-container">
-        <!-- TAB 1: 主页 -->
         <div class="app-tab-panel active" id="panel_home">
             <div class="profile-hero-banner">
                 <div class="hero-user-block">
@@ -221,7 +227,6 @@
                 <div class="volume-row"><span>🔊 远端总音量</span><input type="range" class="vol-slider" id="outputSlider" min="0" max="100" value="80" oninput="setHardwareOutputMaster(this.value)"></div>
             </div>
             
-            <!-- 圆形横向内嵌分类图标 -->
             <div class="category-circle-ribbon">
                 <div class="meta-text-circle" onclick="triggerQuickGroupTabNotice('📋 [组织类别] 成功触发 TASK 卡片存底锚定！')">Task</div>
                 <div class="meta-text-circle" onclick="triggerQuickGroupTabNotice('🌱 [组织类别] 成功触发 LIFE 日常生活追踪锚定！')">Life</div>
@@ -232,7 +237,6 @@
             <div class="seats-list-container"><div class="list-section-title">在线好友名单 (点击名字启动 1对1 隐私私信 💬)</div><div id="homeActiveFriendsList"></div></div>
         </div>
 
-        <!-- TAB 2: 聊天入口 -->
         <div class="app-tab-panel" id="panel_chat">
             <div class="chat-portal-list" id="chatPortalList">
                 <div class="chat-portal-row" onclick="openVoiceRoomStage('group', '公共群组语音大厅')">
@@ -243,7 +247,9 @@
             </div>
         </div>
 
-        <!-- TAB 5: Apps 与 Keep 备忘录 -->
+        <div class="app-tab-panel" id="panel_voom"><div class="voom-feed-node"><h5>超天酱 (OMGkawaiiAngel)</h5><p style="font-size:13px; margin-top:8px;">GitHub Pages 无服务纯前端托管已经顺利上线！🙏</p></div></div>
+        <div class="app-tab-panel" id="panel_news"><div class="news-headline-card"><h4>【无痕公告】全网私信不经过服务器，完全走客户端内存即时回显。</h4></div></div>
+        
         <div class="app-tab-panel" id="panel_apps">
             <div class="apps-panel-backdrop">
                 <div class="retro-win95-container">
@@ -266,7 +272,6 @@
         </div>
     </div>
 
-    <!-- 顶级独立会话舞台 -->
     <div class="active-chat-stage" id="activeChatStage">
         <div class="stage-header">
             <span style="cursor:pointer; font-weight:bold; color:var(--line-cyan); font-size: 14px;" onclick="closeVoiceRoomStage()">❮ 返回</span>
@@ -279,7 +284,6 @@
         <div class="voice-stream-ribbon" id="voiceStreamRibbon"></div>
         <div class="stage-scroller" id="stageScroller"></div>
         
-        <!-- 贴图抽屉 -->
         <div class="line-sticker-tray" id="lineStickerTrayNode">
             <div class="sticker-unit" onclick="executeSendSticker('🐻')">🐻</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐰')">🐰</div>
@@ -301,7 +305,6 @@
         </div>
     </div>
 
-    <!-- 底栏 -->
     <div class="bottom-pixel-navbar">
         <div class="nav-tab-trigger active" onclick="switchTabSelector(0)"><div class="nav-pixel-glyph">💻</div><span>主頁</span></div>
         <div class="nav-tab-trigger" onclick="switchTabSelector(1)"><div class="nav-red-badge" id="chatTotalCountBadge">0</div><div class="nav-pixel-glyph">💬</div><span>聊天</span></div>
@@ -312,6 +315,7 @@
 </div>
 
 <script>
+    // XSS防御转义
     function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
 
     const roomSeed = window.location.hash ? window.location.hash.substring(1) : "global_main_hub";
@@ -521,7 +525,7 @@
             let safeStatus = escapeHtml(uData.statusMsg || '● 在线联线中');
             
             list.innerHTML += `
-                <div class="seat-row-item" onclick="openVoiceRoomStage('private', '${safeName}')">
+                <div class="seat-row-item" onclick=\"openVoiceRoomStage('private', '${safeName}')\">
                     <div class="seat-pop-txt" id="home_pop_${safeName}">Poked!</div>
                     <div class="seat-left-info">
                         <div class="seat-avatar-container">${avHtml}</div>
@@ -634,7 +638,7 @@
         
         if (isBot) {
             setTimeout(() => {
-                appendChatBubbleNode(activePrivateTargetPeer, "", "🍬 哇！好可爱的 LINE 大表情！(已读快攒)", false, false, false);
+                appendChatBubbleNode(activePrivateTargetPeer, "", "🍬 哇！好可爱的地雷系贴图！(已读标记)", false, false, false);
                 playSynthTone('ping');
             }, 1000);
         }
@@ -660,13 +664,13 @@
             if (isBot) {
                 setTimeout(() => {
                     let replies = [
-                        "太棒了！微渐变绿色皮肤和高光「已讀」提示渲染成功，高级感拉满了！💖",
-                        "（转圈圈）这套全新UI气泡完美契合全面屏视野，长时间对流看字也不会觉得累了！✨",
+                        "太棒了！地雷妹暗黑网格和微渐变深粉色气泡完全合流，运行毫无卡顿死锁！💖",
+                        "（转圈圈）这套全新UI完美契合全面屏，高饱和病娇美学简直是开黑界的高级艺术！✨",
                         "聊天公屏现在带有了独立的卡片轻度投影，极客视觉拉满！🛸",
                         "看得到你发的文字啦！大表情和高拟真对流状态全都刷新好了！🍭"
                     ];
                     let r = replies[Math.floor(Math.random() * replies.length)];
-                    appendChatBubbleNode(activePrivateTargetPeer, "", r, false, isPrivateBurnActive(), false);
+                    appendChatBubbleNode(activePrivateTargetPeer, "", r, false, isPrivateBurnActive(), false); 
                     playSynthTone('ping');
                 }, 1000);
             }
@@ -675,7 +679,7 @@
     }
     function sendSocketJson(obj) { if(mqttClient && mqttClient.connected) mqttClient.publish(MQTT_TOPIC, JSON.stringify(obj)); }
 
-    // ================= ✨ JS层对流优化：重组已读及时间标签DOM =================
+    // 🛡️ 【硬核全量重构层】：彻底剔除 combo.appendChild(String) 恶意闪退漏洞，采用原生干净的 DOM 对流拼接
     function appendChatBubbleNode(sender, avB64, content, isImg, isBurnType, isSticker) {
         const scroller = document.getElementById('stageScroller'); if(!scroller) return;
         const isSelf = sender === myName;
@@ -683,24 +687,22 @@
         const combo = document.createElement('div'); 
         combo.className = `bubble-combo ${isSelf ? 'self' : 'other'} ${isBurnType ? 'burn-mode' : ''}`;
         
-        // 1. 渲染对方头像
+        // 1. 头像插入
         if(!isSelf) {
             let avHtml = avB64 ? `<img class="bubble-avatar-img" src="${avB64}">` : `<div class="bubble-avatar-img" style="background:#e8edf0; text-align:center;line-height:34px;font-size:18px;">🛸</div>`;
             combo.insertAdjacentHTML('beforeend', avHtml);
         }
 
         const coreWrap = document.createElement('div'); coreWrap.className = 'bubble-core-wrap'; 
-        if(!isSelf) {
-            coreWrap.insertAdjacentHTML('beforeend', `<span class="bubble-core-name">${escapeHtml(sender)}</span>`);
-        }
+        if(!isSelf) { coreWrap.insertAdjacentHTML('beforeend', `<span class="bubble-core-name">${escapeHtml(sender)}</span>`); }
 
-        // 2. 气泡本体
+        // 2. 气泡本体插入
         const body = document.createElement('div'); 
         body.className = `bubble-body ${isSticker ? 'line-big-sticker-node' : ''}`;
         
         if (isBurnType) {
-            body.innerHTML = `⚠️ 阅后即焚悄悄话 (点击解封查看)`;
-            body.onclick = function() {
+            body.innerHTML = `⚠️ 阅后即焚悄悄话 (点击查看)`;
+            body.onclick = function() { 
                 if(isImg) { body.innerHTML = ''; const img = document.createElement('img'); img.className='chat-raw-img'; img.src=content; img.onclick=()=>openSandbox(content); body.appendChild(img); }
                 else { body.textContent = content; }
                 body.style.background = "#fff"; body.style.color = "#000"; body.onclick = null;
@@ -710,19 +712,13 @@
             if(isImg) {
                 const img = document.createElement('img'); img.className = 'chat-raw-img'; img.src = content; img.onclick = () => openSandbox(content);
                 body.appendChild(img);
-            } else if(isSticker) {
-                body.textContent = content; 
-            } else {
-                body.textContent = content; 
-            }
+            } else if(isSticker) { body.textContent = content; }
+            else { body.textContent = content; }
         }
         coreWrap.appendChild(body);
 
-        // 3. 时间与高还原「已讀」物理插槽
-        const d = new Date();
-        const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-        
-        // 自己发的追加亮青色「已讀」高光标记
+        // 3. 时间与「已讀」对流重置
+        const d = new Date(); const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
         const metaHtml = `<span class="bubble-timestamp">${isSelf ? '<b class="line-read-badge">已讀</b>'+timeStr : timeStr}</span>`;
         
         if(isSelf) {
@@ -734,10 +730,10 @@
         }
         
         scroller.appendChild(combo); 
-        scroller.scrollTop = scroller.scrollHeight; 
+        scroller.scrollTop = scroller.scrollHeight; // 稳定滚屏置底
     }
 
-    // Local Keep Memo
+    // Keep Memo 备忘录
     function executeSaveKeepMemo() {
         const input = document.getElementById('keepMemoInput'); if(!input) return;
         const txt = input.value.trim(); if(!txt) return;
@@ -761,7 +757,6 @@
         });
     }
     function clearAllKeepMemos() { localStorage.removeItem('line_keep_memo_pool'); renderLocalKeepMemosList(); }
-    
     function appendScRedBillboard(sender, amt) { const scroller = document.getElementById('stageScroller'); if(!scroller) return; const node = document.createElement('div'); node.className = 'sc-billboard-msg'; node.innerText = `💸 SuperChat：[${escapeHtml(sender)}] 爆赞赤字 ￥${amt}元！`; scroller.appendChild(node); scroller.scrollTop = scroller.scrollHeight; }
     function appendNoticeToStage(txt) { const scroller = document.getElementById('stageScroller'); if(!scroller) return; const node = document.createElement('div'); node.className = 'stage-system-node'; node.textContent = txt; scroller.appendChild(node); scroller.scrollTop = scroller.scrollHeight; }
 </script>
