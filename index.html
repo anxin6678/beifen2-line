@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
     <title>LINE × 超天酱 跨端无服务即时通讯系统</title>
+    <!-- 安全防拦截级 unpkg 依赖链，彻底瓦解 GitHub Pages 脚本死锁报错 -->
     <script src="https://unpkg.com/mqtt@4.2.8/dist/mqtt.min.js"></script>
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.22.0.js"></script>
     
@@ -58,7 +59,7 @@
         .volume-row { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #666; }
         .vol-slider { flex: 1; accent-color: var(--line-cyan); height: 4px; cursor: pointer; }
         
-        /* 圆圈内部水平文字分类图标 */
+        /* 组织类别图标 */
         .category-circle-ribbon { display: flex; justify-content: space-around; align-items: center; padding: 15px 10px; background: #fff; border-bottom: 8px solid #f4f7f9; }
         .meta-text-circle { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #e0f2fe, #ebdffd); border: 1.5px solid #bae6fd; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; color: #0369a1; cursor: pointer; transition: transform 0.1s; letter-spacing: -0.5px; }
         .meta-text-circle:active { transform: scale(0.92); }
@@ -86,7 +87,7 @@
         .portal-meta p { font-size: 11.5px; color: #8e9aa2; margin-top: 4px; }
         .portal-badge-right { background: #ff3b30; color: #fff; font-size: 10px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: flex; justify-content: center; align-items: center; padding: 0 4px; }
 
-        /* 🪐 视觉皮肤重构：高拟真地雷系暗黑粉真图壁纸全贴合舱 */
+        /* 地雷系全贴合真图背景舱 */
         .active-chat-stage {
             position: absolute;
             top: 0;
@@ -107,18 +108,20 @@
         
         .stage-header { background: #ffffff; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e5e5; flex-shrink: 0; }
         .stage-header h4 { font-size: 15px; font-weight: bold; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .stage-scroller { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; -webkit-overflow-scrolling: touch; }
         
-        /* 降噪系统通告行：虚线暗粉微透卡片 */
-        .stage-system-node { background: rgba(23,20,29,0.7); border: 1px dashed rgba(255,0,127,0.4); color: #fbcfe8; font-size: 11px; padding: 5px 14px; border-radius: 12px; align-self: center; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-
-        .voice-stream-ribbon { background: #ffffff; padding: 6px 16px; border-bottom: 1px solid #edf2f5; display: flex; flex-direction: column; flex-shrink: 0; display: none; }
+        /* 🌟 新增优化：大厅语音房麦位折叠触控条 */
+        .voice-fold-trigger { background: rgba(255, 255, 255, 0.95); padding: 4px 16px; font-size: 11px; font-weight: bold; color: #db2777; border-bottom: 1px solid #edf2f5; display: none; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; }
+        .voice-stream-ribbon { background: rgba(255, 255, 255, 0.95); padding: 0 16px 6px 16px; border-bottom: 1px solid #edf2f5; display: none; flex-direction: column; flex-shrink: 0; overflow: hidden; transition: max-height 0.25s ease-out; }
+        
         .voice-row-node { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f6f9fa; }
         .voice-node-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e0e5e8; border: 2px solid transparent; overflow: hidden; display: flex; justify-content: center; align-items: center; }
         .voice-node-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .voice-row-node.speaking .voice-node-avatar { border-color: var(--line-green); box-shadow: 0 0 8px rgba(6,199,85,0.5); }
 
-        /* 🎀 气泡皮肤：高饱和地雷微渐变粉 */
+        .stage-scroller { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; -webkit-overflow-scrolling: touch; }
+        .stage-system-node { background: rgba(23,20,29,0.7); border: 1px dashed rgba(255,0,127,0.4); color: #fbcfe8; font-size: 11px; padding: 5px 14px; border-radius: 12px; align-self: center; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+        /* 气泡皮肤 */
         .bubble-combo { display: flex; gap: 10px; max-width: 88%; align-items: flex-end; position: relative; }
         .bubble-combo.self { align-self: flex-end; flex-direction: row-reverse; }
         .bubble-combo.other { align-self: flex-start; }
@@ -130,28 +133,25 @@
         
         .bubble-body { padding: 11px 16px; border-radius: 18px; font-size: 14px; line-height: 1.45; word-break: break-all; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .bubble-combo.other .bubble-body { background: #ffffff; color: #1c2d37; border-top-left-radius: 4px; border: 1px solid #fbcfe8; }
-        
-        /* 己方气泡：赛博嫩粉到蔷薇深粉高保真微度立体渐变 */
         .bubble-combo.self .bubble-body { background: linear-gradient(135deg, #f472b6 0%, #db2777 100%); color: #ffffff; border-top-right-radius: 4px; }
         
         .line-big-sticker-node { max-width: 120px !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; font-size: 65px !important; line-height: 1; text-align: center; }
         .bubble-combo.burn-mode .bubble-body { background: linear-gradient(135deg, #24242b 0%, #0f0f12 100%) !important; color: #ff007f !important; font-weight: bold; border: 1px solid #ff007f; box-shadow: 0 0 14px rgba(255,0,127,0.5); cursor: pointer; }
         
-        /* 时间及高光已读标签排布线 */
         .bubble-timestamp { font-size: 10px; align-self: flex-end; margin: 0 4px; white-space: nowrap; line-height: 1.3; color: rgba(255,255,255,0.55); text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
         .bubble-combo.self .bubble-timestamp { text-align: right; color: rgba(251, 207, 232, 0.75); }
         .line-read-badge { color: #00ffff !important; display: block; font-weight: bold; text-align: right; letter-spacing: 0.5px; text-shadow: 0 0 4px rgba(0,255,255,0.5); }
 
-        /* 大表情托盘 */
-        .line-sticker-tray { background: #f4f5f7; border-top: 1px solid #dcd1ed; display: none; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 12px; height: 110px; overflow-y: auto; flex-shrink: 0; z-index: 2200; }
-        .sticker-unit { font-size: 38px; text-align: center; cursor: pointer; transition: transform 0.1s; display: flex; justify-content: center; align-items: center; }
+        /* 表情抽屉 */
+        .line-sticker-tray { background: #f4f5f7; border-top: 1px solid #dcd1ed; display: none; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 12px; height: 130px; overflow-y: auto; flex-shrink: 0; z-index: 2200; }
+        .sticker-unit { font-size: 34px; text-align: center; cursor: pointer; transition: transform 0.1s; display: flex; justify-content: center; align-items: center; padding: 4px 0; }
         .sticker-unit:active { transform: scale(0.85); }
 
         .stage-input-bar { background: #fff; padding: 8px 12px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #edf2f5; flex-shrink: 0; z-index: 2100; }
         .stage-input { flex: 1; background: #f5f6f8; border: 1px solid #eef0f2; padding: 10px 14px; border-radius: 20px; color: #333; font-size: 14px; outline: none; }
         .sc-billboard-msg { background: linear-gradient(135deg, #ff0055, #7b2cbf); border: 1px solid #fff; color: #fff; font-size: 12px; padding: 8px 12px; border-radius: 10px; width: 95%; align-self: center; font-weight: bold; }
 
-        /* KEEP 缓存区 */
+        /* KEEP 缓存 */
         .keep-memo-scroller { background: #fff; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
         .keep-entry-node { background: #f4f7f9; border-left: 4px solid var(--line-cyan); padding: 10px; border-radius: 0 8px 8px 0; font-size: 13px; position: relative; }
 
@@ -160,7 +160,7 @@
         .retro-win95-title { background: linear-gradient(90deg, #9d4edd, #ff007f); padding: 6px 12px; font-size: 11px; font-weight: bold; color: #fff; display: flex; justify-content: space-between; }
         .app-tool-btn { background: #fff; border: 1px solid #dcd1ed; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; font-weight: bold; color: #5c4e75; cursor: pointer; text-align: center; margin-top: 8px; width: 100%; }
 
-        /* Bottom Tab 底栏 */
+        /* Bottom Tab */
         .bottom-pixel-navbar { background: var(--purple-nav); padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #dcd1ed; flex-shrink: 0; z-index: 900; }
         .nav-tab-trigger { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #5c4e75; cursor: pointer; flex: 1; text-decoration: none; position: relative; }
         .nav-tab-trigger.active { color: var(--neon-pink); font-weight: bold; }
@@ -284,20 +284,34 @@
                 <span id="stageMicText" style="color:var(--line-green); font-weight:bold; cursor:pointer; font-size: 14px;" onclick="toggleMicHardwareState()">说话</span>
             </div>
         </div>
+        
+        <!-- 🌟 核心升级：麦位控制折叠条 -->
+        <div class="voice-fold-trigger" id="voiceFoldBarNode" onclick="toggleVoiceRibbonFolding()">
+            <span>🎤 当前房间麦位状态栏</span><span id="foldArrowNode">收起 ∧</span>
+        </div>
         <div class="voice-stream-ribbon" id="voiceStreamRibbon"></div>
+        
         <div class="stage-scroller" id="stageScroller"></div>
         
+        <!-- 贴图与国旗整合版托盘 -->
         <div class="line-sticker-tray" id="lineStickerTrayNode">
+            <!-- 经典表情 -->
             <div class="sticker-unit" onclick="executeSendSticker('🐻')">🐻</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐰')">🐰</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐸')">🐸</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐥')">🐥</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐱')">🐱</div>
-            <div class="sticker-unit" onclick="executeSendSticker('🍿')">🍿</div>
-            <div class="sticker-unit" onclick="executeSendSticker('🍔')">🍔</div>
-            <div class="sticker-unit" onclick="executeSendSticker('💩')">💩</div>
-            <div class="sticker-unit" onclick="executeSendSticker('🤡')">🤡</div>
-            <div class="sticker-unit" onclick="executeSendSticker('☠️')">☠️</div>
+            <!-- 国旗表情应援舱 -->
+            <div class="sticker-unit" onclick="executeSendSticker('🇨🇳')">🇨🇳</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🇭🇰')">🇭🇰</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🇲🇴')">🇲🇴</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🇻🇳')">🇻🇳</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🇰🇭')">🇰🇭</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🇯🇵')">🇯🇵</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🇹🇭')">🇹🇭</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🇮🇩')">🇮🇩</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🇩🇪')">🇩🇪</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🏳️‍🌈')">☠️</div>
         </div>
 
         <div class="stage-input-bar">
@@ -330,6 +344,7 @@
 
     let mqttClient = null, agoraClient = null, localAudioTrack = null, zoomScale = 1, isMuted = true, activeChatScope = "", activePrivateTargetPeer = "", globalOnlineUsers = {}, myName = "", myAvatarBase64 = "", myAgoraUid = 0, isPrivateBurnMode = false;
     let privateUnreadRegistry = {};
+    let isVoiceRibbonCollapsed = false; // 麦位栏本地状态锁
 
     globalOnlineUsers = {
         "超天酱 (Bot)": { avatar: "", agoraUid: 11111, isMuted: false, statusMsg: "🍭 天使降临！点击我可以跟我发私信测试！", lastSeen: Date.now() + 999999999 },
@@ -384,6 +399,21 @@
     function toggleVolumePanelStrip() { const p = document.getElementById('volumeStripPane'); p.style.display = p.style.display === 'flex' ? 'none' : 'flex'; }
     function toggleLineStickerTray() { const t = document.getElementById('lineStickerTrayNode'); t.style.display = t.style.display === 'grid' ? 'none' : 'grid'; }
     
+    // 🌟 新增功能：流式折叠控制板处理器
+    function toggleVoiceRibbonFolding() {
+        const ribbon = document.getElementById('voiceStreamRibbon');
+        const arrow = document.getElementById('foldArrowNode');
+        isVoiceRibbonCollapsed = !isVoiceRibbonCollapsed;
+        
+        if (isVoiceRibbonCollapsed) {
+            ribbon.style.maxHeight = '0px';
+            arrow.innerText = '展开 ∨';
+        } else {
+            ribbon.style.maxHeight = '300px'; // 给予安全极限膨胀高度
+            arrow.innerText = '收起 ∧';
+        }
+    }
+
     function switchTabSelector(index) {
         const panels = ["panel_home", "panel_chat", "panel_voom", "panel_news", "panel_apps"];
         const triggers = document.querySelectorAll('.nav-tab-trigger');
@@ -400,10 +430,18 @@
         document.getElementById('stageScroller').innerHTML = ''; 
         document.getElementById('stageRoomTitle').innerText = title;
         document.getElementById('lineStickerTrayNode').style.display = 'none';
+        
+        const foldBar = document.getElementById('voiceFoldBarNode');
         const ribbon = document.getElementById('voiceStreamRibbon');
         
         if (scope === 'group') {
-            ribbon.style.display = 'flex'; document.getElementById('stageMicText').style.display = 'inline';
+            foldBar.style.display = 'flex';
+            ribbon.style.display = 'flex';
+            ribbon.style.maxHeight = '300px';
+            isVoiceRibbonCollapsed = false;
+            document.getElementById('foldArrowNode').innerText = '收起 ∧';
+            document.getElementById('stageMicText').style.display = 'inline';
+            
             if (agoraClient) { 
                 appendNoticeToStage("正在加载公网真双工音频轨通道...");
                 agoraClient.join(AGORA_APP_ID, CHANNEL_ROOM_999, null, myAgoraUid).then(() => {
@@ -411,7 +449,10 @@
                 }).catch(err => { appendNoticeToStage("⚠️ 声网音频加载出错，请刷新。"); });
             }
         } else {
-            ribbon.style.display = 'none'; document.getElementById('stageMicText').style.display = 'none'; activePrivateTargetPeer = title;
+            foldBar.style.display = 'none';
+            ribbon.style.display = 'none';
+            document.getElementById('stageMicText').style.display = 'none'; 
+            activePrivateTargetPeer = title;
             privateUnreadRegistry[activePrivateTargetPeer] = 0;
             updateGlobalRedTabBadgeTotal();
             rebuildPrivateSessionPortalRows();
@@ -422,6 +463,7 @@
     function closeVoiceRoomStage() {
         document.getElementById('activeChatStage').style.display = 'none';
         document.getElementById('lineStickerTrayNode').style.display = 'none';
+        document.getElementById('voiceFoldBarNode').style.display = 'none';
         if (activeChatScope === 'group' && agoraClient) { agoraClient.leave(); }
         if (localAudioTrack) { localAudioTrack.stop(); localAudioTrack.close(); localAudioTrack = null; }
         isMuted = true;
@@ -640,7 +682,7 @@
         
         if (isBot) {
             setTimeout(() => {
-                appendChatBubbleNode(activePrivateTargetPeer, "", "🍬 哇！好可爱的地雷系贴图！(已读标记)", false, false, false);
+                appendChatBubbleNode(activePrivateTargetPeer, "", "🍬 收到大贴图应援！画面极速渲染完成。(已读状态)", false, false, false);
                 playSynthTone('ping');
             }, 1000);
         }
@@ -681,7 +723,6 @@
     }
     function sendSocketJson(obj) { if(mqttClient && mqttClient.connected) mqttClient.publish(MQTT_TOPIC, JSON.stringify(obj)); }
 
-    // 🧱 彻底剔除 combo.appendChild(String) 闪退漏洞，采用原生干净的 DOM 对流拼接
     function appendChatBubbleNode(sender, avB64, content, isImg, isBurnType, isSticker) {
         const scroller = document.getElementById('stageScroller'); if(!scroller) return;
         const isSelf = sender === myName;
@@ -689,7 +730,6 @@
         const combo = document.createElement('div'); 
         combo.className = `bubble-combo ${isSelf ? 'self' : 'other'} ${isBurnType ? 'burn-mode' : ''}`;
         
-        // 头像
         if(!isSelf) {
             let avHtml = avB64 ? `<img class="bubble-avatar-img" src="${avB64}">` : `<div class="bubble-avatar-img" style="background:#e8edf0; text-align:center;line-height:34px;font-size:18px;">🛸</div>`;
             combo.insertAdjacentHTML('beforeend', avHtml);
@@ -698,7 +738,6 @@
         const coreWrap = document.createElement('div'); coreWrap.className = 'bubble-core-wrap'; 
         if(!isSelf) { coreWrap.insertAdjacentHTML('beforeend', `<span class="bubble-core-name">${escapeHtml(sender)}</span>`); }
 
-        // 气泡内容
         const body = document.createElement('div'); 
         body.className = `bubble-body ${isSticker ? 'line-big-sticker-node' : ''}`;
         
@@ -719,7 +758,6 @@
         }
         coreWrap.appendChild(body);
 
-        // 已读时间对流
         const d = new Date(); const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
         const metaHtml = `<span class="bubble-timestamp">${isSelf ? '<b class="line-read-badge">已讀</b>'+timeStr : timeStr}</span>`;
         
@@ -732,7 +770,7 @@
         }
         
         scroller.appendChild(combo); 
-        scroller.scrollTop = scroller.scrollHeight; // 滚动至底部
+        scroller.scrollTop = scroller.scrollHeight; 
     }
 
     // Keep Memo 备忘录
