@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
     <title>LINE × 超天酱 跨端无服务即时通讯系统</title>
-    <!-- 全球免拦截级高可用中继网关依赖链 -->
     <script src="https://unpkg.com/mqtt@4.2.8/dist/mqtt.min.js"></script>
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.22.0.js"></script>
     
@@ -19,7 +18,6 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        /* 🛡️ 强制挂载全球 Emoji 色彩核心字体引擎，保障国旗正确渲染 */
         body { font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "PingFang SC", Arial, sans-serif; background-color: #cbdbe3; height: 100dvh; display: flex; justify-content: center; align-items: center; overflow: hidden; -webkit-user-select: none; user-select: none; }
         input, textarea { -webkit-user-select: text !important; user-select: text !important; font-family: inherit; }
 
@@ -60,12 +58,12 @@
         .volume-row { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #666; }
         .vol-slider { flex: 1; accent-color: var(--line-cyan); height: 4px; cursor: pointer; }
         
-        /* 组织类别图标 */
+        /* 组织类别圆圈按钮 */
         .category-circle-ribbon { display: flex; justify-content: space-around; align-items: center; padding: 15px 10px; background: #fff; border-bottom: 8px solid #f4f7f9; }
         .meta-text-circle { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #e0f2fe, #ebdffd); border: 1.5px solid #bae6fd; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; color: #0369a1; cursor: pointer; transition: transform 0.1s; letter-spacing: -0.5px; }
         .meta-text-circle:active { transform: scale(0.92); }
 
-        /* 在线好友行 */
+        /* 好友行 */
         .seats-list-container { background: #ffffff; display: flex; flex-direction: column; flex-shrink: 0; }
         .list-section-title { font-size: 11px; color: #8e9aa2; padding: 10px 16px 4px 16px; font-weight: bold; }
         .seat-row-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f6f9fa; cursor: pointer; position: relative; }
@@ -88,7 +86,8 @@
         .portal-meta p { font-size: 11.5px; color: #8e9aa2; margin-top: 4px; }
         .portal-badge-right { background: #ff3b30; color: #fff; font-size: 10px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: flex; justify-content: center; align-items: center; padding: 0 4px; }
 
-        /* 🪐 视觉皮肤重构：高拟真地雷系暗黑粉真图壁纸全贴合舱 */
+        /* 🪐 地雷系高精暗黑粉定制真图背景舱 */
+        /* 🛡️ 漏洞修复：调整 z-index 为 800，高度扣除底栏高度，确保下方底栏完全可点、绝不发生触控阻断 */
         .active-chat-stage {
             position: absolute;
             top: 0;
@@ -102,7 +101,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            z-index: 2000;
+            z-index: 800;
             display: none;
             flex-direction: column;
         }
@@ -111,7 +110,7 @@
         .stage-header h4 { font-size: 15px; font-weight: bold; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
         /* 麦位控制折叠条 */
-        .voice-fold-trigger { background: rgba(255, 255, 255, 0.95); padding: 4px 16px; font-size: 11px; font-weight: bold; color: #db2777; border-bottom: 1px solid #edf2f5; display: none; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; }
+        .voice-fold-trigger { background: rgba(255, 255, 255, 0.95); padding: 5px 16px; font-size: 11px; font-weight: bold; color: #db2777; border-bottom: 1px solid #edf2f5; display: none; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; }
         .voice-stream-ribbon { background: rgba(255, 255, 255, 0.95); padding: 0 16px 6px 16px; border-bottom: 1px solid #edf2f5; display: none; flex-direction: column; flex-shrink: 0; overflow: hidden; transition: max-height 0.25s ease-out; }
         .voice-row-node { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f6f9fa; }
         .voice-node-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e0e5e8; border: 2px solid transparent; overflow: hidden; display: flex; justify-content: center; align-items: center; }
@@ -121,7 +120,7 @@
         .stage-scroller { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; -webkit-overflow-scrolling: touch; }
         .stage-system-node { background: rgba(23,20,29,0.7); border: 1px dashed rgba(255,0,127,0.4); color: #fbcfe8; font-size: 11px; padding: 5px 14px; border-radius: 12px; align-self: center; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
-        /* 气泡皮肤：高饱和地雷微渐变粉 */
+        /* 气泡美化 */
         .bubble-combo { display: flex; gap: 10px; max-width: 88%; align-items: flex-end; position: relative; }
         .bubble-combo.self { align-self: flex-end; flex-direction: row-reverse; }
         .bubble-combo.other { align-self: flex-start; }
@@ -142,7 +141,7 @@
         .bubble-combo.self .bubble-timestamp { text-align: right; color: rgba(251, 207, 232, 0.75); }
         .line-read-badge { color: #00ffff !important; display: block; font-weight: bold; text-align: right; letter-spacing: 0.5px; text-shadow: 0 0 4px rgba(0,255,255,0.5); }
 
-        /* 🏳️‍🌈 强化扩充：带多国国旗应援舱的大表情抽屉 */
+        /* 贴图大抽屉 */
         .line-sticker-tray { background: #f4f5f7; border-top: 1px solid #dcd1ed; display: none; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 12px; height: 160px; overflow-y: auto; flex-shrink: 0; z-index: 2200; }
         .sticker-unit { font-size: 34px; text-align: center; cursor: pointer; transition: transform 0.1s; display: flex; justify-content: center; align-items: center; padding: 4px 0; }
         .sticker-unit:active { transform: scale(0.85); }
@@ -151,7 +150,7 @@
         .stage-input { flex: 1; background: #f5f6f8; border: 1px solid #eef0f2; padding: 10px 14px; border-radius: 20px; color: #333; font-size: 14px; outline: none; }
         .sc-billboard-msg { background: linear-gradient(135deg, #ff0055, #7b2cbf); border: 1px solid #fff; color: #fff; font-size: 12px; padding: 8px 12px; border-radius: 10px; width: 95%; align-self: center; font-weight: bold; }
 
-        /* KEEP 缓存 */
+        /* KEEP 备忘录 */
         .keep-memo-scroller { background: #fff; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
         .keep-entry-node { background: #f4f7f9; border-left: 4px solid var(--line-cyan); padding: 10px; border-radius: 0 8px 8px 0; font-size: 13px; position: relative; }
 
@@ -160,15 +159,15 @@
         .retro-win95-title { background: linear-gradient(90deg, #9d4edd, #ff007f); padding: 6px 12px; font-size: 11px; font-weight: bold; color: #fff; display: flex; justify-content: space-between; }
         .app-tool-btn { background: #fff; border: 1px solid #dcd1ed; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; font-weight: bold; color: #5c4e75; cursor: pointer; text-align: center; margin-top: 8px; width: 100%; }
 
-        /* Bottom Tab */
-        .bottom-pixel-navbar { background: var(--purple-nav); padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #dcd1ed; flex-shrink: 0; z-index: 900; }
+        /* 🛡️ 优化特权：底栏导航线升级为最高交互优先级 z-index: 999，碾压一切遮罩层 */
+        .bottom-pixel-navbar { background: var(--purple-nav); padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #dcd1ed; flex-shrink: 0; z-index: 999; }
         .nav-tab-trigger { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #5c4e75; cursor: pointer; flex: 1; text-decoration: none; position: relative; }
         .nav-tab-trigger.active { color: var(--neon-pink); font-weight: bold; }
         .nav-pixel-glyph { font-size: 20px; line-height: 1; }
         .nav-tab-trigger span { font-size: 10px; }
         .nav-red-badge { position: absolute; top: -4px; right: 16px; background: #ff3b30; color: white; font-size: 9px; font-weight: bold; min-width: 15px; height: 15px; border-radius: 10px; display: flex; justify-content: center; align-items: center; padding: 0 3px; }
 
-        /* 沙盒灯箱 */
+        /* 灯箱 */
         .lightbox-sandbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,14,20,0.97); z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .sandbox-wrap { max-width: 90%; max-height: 75%; display: flex; justify-content: center; align-items: center; transition: transform 0.1s ease; }
         .sandbox-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; border: 2px solid var(--neon-pink); box-shadow: 0 0 30px rgba(255,0,127,0.3); }
@@ -277,7 +276,7 @@
 
     <div class="active-chat-stage" id="activeChatStage">
         <div class="stage-header">
-            <span style="cursor:pointer; font-weight:bold; color:var(--line-cyan); font-size: 14px;" onclick="closeVoiceRoomStage()">❮ 返回</span>
+            <span style="cursor:pointer; font-weight:bold; color:var(--line-cyan); font-size: 14px;" onclick="minimizeVoiceRoomStage()">❮ 返回</span>
             <h4 id="stageRoomTitle">连线中...</h4>
             <div style="display: flex; gap: 8px; align-items: center;">
                 <span id="burnToggleBtn" style="font-size: 10px; background: #444; color: #aaa; padding: 2px 5px; border-radius: 4px; cursor: pointer;" onclick="toggleBurnMode()">🔥 阅后即焚:关</span>
@@ -292,15 +291,12 @@
         
         <div class="stage-scroller" id="stageScroller"></div>
         
-        <!-- 🏳️‍🌈 国旗与贴图大抽屉合集 -->
         <div class="line-sticker-tray" id="lineStickerTrayNode">
-            <!-- 经典表情 -->
             <div class="sticker-unit" onclick="executeSendSticker('🐻')">🐻</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐰')">🐰</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐸')">🐸</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐥')">🐥</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐱')">🐱</div>
-            <!-- 国旗护卫阵列 -->
             <div class="sticker-unit" onclick="executeSendSticker('🇨🇳')">🇨🇳</div>
             <div class="sticker-unit" onclick="executeSendSticker('🇺🇸')">🇺🇸</div>
             <div class="sticker-unit" onclick="executeSendSticker('🇯🇵')">🇯🇵</div>
@@ -367,7 +363,6 @@
         } catch(e) {}
     }
 
-    // 🛡️ 漏洞硬核修复：剥离 input.value 干扰，确保 FileReader 绝对加载完毕才清空文件框
     function processImageScale(file, bound, quality, callback) {
         const r = new FileReader(); r.onload = function(e) {
             const o = new Image(); o.onload = function() {
@@ -380,14 +375,11 @@
     
     function processAvatarFile(input) { 
         if(input.files&&input.files[0]) {
-            processImageScale(input.files[0],100,0.8,b=> { 
-                myAvatarBase64=b; 
-                document.getElementById('avatarUploadTrigger').innerHTML=`<img src="${b}">`; 
-                input.value = ''; // 移至异步最尾端
-            }); 
+            processImageScale(input.files[0],100,0.8,b=> { myAvatarBase64=b; document.getElementById('avatarUploadTrigger').innerHTML=`<img src="${b}">`; input.value = ''; }); 
         }
     }
     
+    // 🛡️ 修复发图失败：采用尾端异步清空机制，阻止 Safari 等 GC 机制中途拦截内存
     function processStageChatImage(input) { 
         if(input.files&&input.files[0]) {
             processImageScale(input.files[0],250,0.7,b=> { 
@@ -398,11 +390,9 @@
                     sendSocketJson({type:'private_img',sender:myName,target:activePrivateTargetPeer,avatar:myAvatarBase64,payload:b, burn: isPrivateBurnActive()});
                     appendChatBubbleNode(myName, myAvatarBase64, b, true, isPrivateBurnActive(), false);
                 } 
-                input.value = ''; // 移至异步最尾端，杜绝发送失败
+                input.value = ''; 
             }); 
-        } else {
-            input.value = '';
-        }
+        } else { input.value = ''; }
     }
     
     function openSandbox(src) { document.getElementById('targetSandboxImg').src = src; document.getElementById('lightboxSandbox').style.display = 'flex'; resetSandboxZoom(); }
@@ -413,19 +403,13 @@
     function toggleLineStickerTray() { const t = document.getElementById('lineStickerTrayNode'); t.style.display = t.style.display === 'grid' ? 'none' : 'grid'; }
     
     function toggleVoiceRibbonFolding() {
-        const ribbon = document.getElementById('voiceStreamRibbon');
-        const arrow = document.getElementById('foldArrowNode');
+        const ribbon = document.getElementById('voiceStreamRibbon'); const arrow = document.getElementById('foldArrowNode');
         isVoiceRibbonCollapsed = !isVoiceRibbonCollapsed;
-        
-        if (isVoiceRibbonCollapsed) {
-            ribbon.style.maxHeight = '0px';
-            arrow.innerText = '展开 ∨';
-        } else {
-            ribbon.style.maxHeight = '300px';
-            arrow.innerText = '收起 ∧';
-        }
+        if (isVoiceRibbonCollapsed) { ribbon.style.maxHeight = '0px'; arrow.innerText = '展开 ∨'; } 
+        else { ribbon.style.maxHeight = '300px'; arrow.innerText = '收起 ∧'; }
     }
 
+    // 🛡️ 漏洞修复：切换选项卡时，强制退让隐藏会话舞台，解开物理手势阻断死锁
     function switchTabSelector(index) {
         const panels = ["panel_home", "panel_chat", "panel_voom", "panel_news", "panel_apps"];
         const triggers = document.querySelectorAll('.nav-tab-trigger');
@@ -433,9 +417,16 @@
             document.getElementById(p).classList.toggle('active', idx === index);
             triggers[idx].classList.toggle('active', idx === index);
         });
+        document.getElementById('activeChatStage').style.display = 'none'; // 切换时后台隐藏窗体
         if(index === 4) renderLocalKeepMemosList(); 
     }
     
+    // 🛡️ 修复返回死锁：點返回「只隱藏不退麥」，保留後台常駐連線
+    function minimizeVoiceRoomStage() {
+        document.getElementById('activeChatStage').style.display = 'none';
+        document.getElementById('lineStickerTrayNode').style.display = 'none';
+    }
+
     function openVoiceRoomStage(scope, title) {
         activeChatScope = scope; 
         document.getElementById('activeChatStage').style.display = 'flex'; 
@@ -447,31 +438,34 @@
         const ribbon = document.getElementById('voiceStreamRibbon');
         
         if (scope === 'group') {
-            foldBar.style.display = 'flex';
-            ribbon.style.display = 'flex';
-            ribbon.style.maxHeight = '300px';
-            isVoiceRibbonCollapsed = false;
-            document.getElementById('foldArrowNode').innerText = '收起 ∧';
-            document.getElementById('stageMicText').style.display = 'inline';
+            foldBar.style.display = 'flex'; ribbon.style.display = 'flex'; ribbon.style.maxHeight = '300px';
+            isVoiceRibbonCollapsed = false; document.getElementById('foldArrowNode').innerText = '收起 ∧';
             
-            if (agoraClient) { 
+            // 只有当声网从未连接时，才执行物理加入，防止重复加入抛错死锁
+            if (agoraClient && agoraClient.connectionState === "DISCONNECTED") { 
                 appendNoticeToStage("正在加载公网真双工音频轨通道...");
                 agoraClient.join(AGORA_APP_ID, CHANNEL_ROOM_999, null, myAgoraUid).then(() => {
                     appendNoticeToStage("🔊 已经成功挂载多人开黑连麦大厅音频网络。");
-                }).catch(err => { appendNoticeToStage("⚠️ 声网音频加载出错，请刷新。"); });
+                }).catch(err => { console.error(err); });
             }
+            
+            // 修正：如果是大厅，将说话按扭变为高亮
+            document.getElementById('stageMicText').innerText = isMuted ? "上麦发言" : "🛑 下麦";
+            document.getElementById('stageMicText').style.color = isMuted ? "var(--line-green)" : "var(--neon-pink)";
         } else {
-            foldBar.style.display = 'none';
-            ribbon.style.display = 'none';
-            document.getElementById('stageMicText').style.display = 'none'; 
+            foldBar.style.display = 'none'; ribbon.style.display = 'none';
+            // 如果是私信，直接修改按扭状态为无痕提示
+            document.getElementById('stageMicText').innerText = "无痕通道";
+            document.getElementById('stageMicText').style.color = "#aaa";
+            
             activePrivateTargetPeer = title;
             privateUnreadRegistry[activePrivateTargetPeer] = 0;
-            updateGlobalRedTabBadgeTotal();
-            rebuildPrivateSessionPortalRows();
+            updateGlobalRedTabBadgeTotal(); rebuildPrivateSessionPortalRows();
             appendNoticeToStage(`🔒 成功切入与 [${activePrivateTargetPeer}] 的无痕私信通道。`);
         }
     }
     
+    // 真正执行连麦销毁与注销的退出函数
     function closeVoiceRoomStage() {
         document.getElementById('activeChatStage').style.display = 'none';
         document.getElementById('lineStickerTrayNode').style.display = 'none';
@@ -481,15 +475,13 @@
         isMuted = true;
         document.getElementById('islandIndicator').className = "island-indicator";
         document.getElementById('islandStatusText').innerText = "点击灵动岛上麦 🔇";
-        const stageMic = document.getElementById('stageMicText'); if(stageMic) { stageMic.innerText = "说话"; stageMic.style.color = "var(--line-green)"; }
         activeChatScope = ""; activePrivateTargetPeer = "";
     }
 
     function executeAppLaunch() {
         const nick = document.getElementById('nicknameInput').value.trim(); 
         if(!nick) { alert("专属网名不可留空哦！ 😇"); return; } 
-        myName = nick; 
-        myAgoraUid = Math.floor(Math.random() * 89999) + 10000;
+        myName = nick; myAgoraUid = Math.floor(Math.random() * 89999) + 10000;
         
         document.getElementById('identityOverlay').style.display = 'none'; 
         document.getElementById('homeMyName').innerText = myName;
@@ -497,6 +489,7 @@
 
         mqttClient = mqtt.connect(MQTT_BROKER, { clientId: 'line_git_' + Math.random().toString(16).substr(2, 8) });
 
+        mqttClient.connect;
         mqttClient.on('connect', () => {
             mqttClient.subscribe(MQTT_TOPIC);
             sendSocketJson({ type: 'handshake', user: myName, agoraUid: myAgoraUid, avatar: myAvatarBase64, isMuted: isMuted, statusMsg: "人は悲しみから堂々と出てくるのが艺术家です" });
@@ -505,29 +498,22 @@
 
         mqttClient.on('message', (topic, msgBuffer) => {
             try {
-                const decodedStr = msgBuffer.toString();
-                const data = JSON.parse(decodedStr);
-                
+                const decodedStr = msgBuffer.toString(); const data = JSON.parse(decodedStr);
                 if (data.type === 'handshake' || data.type === 'keepalive') {
                     if(data.user === myName) return;
                     globalOnlineUsers[data.user] = { avatar: data.avatar, agoraUid: data.agoraUid, isMuted: data.isMuted, statusMsg: data.statusMsg, lastSeen: Date.now() };
                 }
-                
-                if ((data.type === 'group_chat' || data.type === 'group_img' || data.type === 'private_chat' || data.type === 'private_img' || data.type === 'sticker') && data.sender === myName) {
-                    return;
-                }
+                if ((data.type === 'group_chat' || data.type === 'group_img' || data.type === 'private_chat' || data.type === 'private_img' || data.type === 'sticker') && data.sender === myName) return;
 
                 if (data.type === 'group_chat' || data.type === 'group_img') {
-                    if (activeChatScope === 'group') appendChatBubbleNode(data.sender, data.avatar, data.payload, data.type === 'group_img', false, false);
+                    appendChatBubbleNode(data.sender, data.avatar, data.payload, data.type === 'group_img', false, false);
                 }
                 else if (data.type === 'sticker') {
-                    if (activeChatScope === 'group') appendChatBubbleNode(data.sender, data.avatar, data.payload, false, false, true);
+                    appendChatBubbleNode(data.sender, data.avatar, data.payload, false, false, true);
                 }
                 else if (data.type === 'private_chat' || data.type === 'private_img') {
                     if (data.target !== myName) return; 
-                    const isChattingNow = (activeChatScope === 'private' && data.sender === activePrivateTargetPeer);
-                    
-                    if (isChattingNow) {
+                    if (activeChatScope === 'private' && data.sender === activePrivateTargetPeer && document.getElementById('activeChatStage').style.display !== 'none') {
                         appendChatBubbleNode(data.sender, data.avatar, data.payload, data.type === 'private_img', data.burn, false);
                     } else {
                         privateUnreadRegistry[data.sender] = (privateUnreadRegistry[data.sender] || 0) + 1;
@@ -554,34 +540,24 @@
 
         setInterval(() => {
             const now = Date.now();
-            Object.keys(globalOnlineUsers).forEach(k => { 
-                if (k.includes("(Bot)")) return;
-                if (now - globalOnlineUsers[k].lastSeen > 8000) delete globalOnlineUsers[k]; 
-            });
+            Object.keys(globalOnlineUsers).forEach(k => { if (!k.includes("(Bot)") && now - globalOnlineUsers[k].lastSeen > 8000) delete globalOnlineUsers[k]; });
             refreshHomeActiveFriendsListRows(globalOnlineUsers);
             if(activeChatScope === 'group') renderGroupActiveRibbonSeats(globalOnlineUsers);
         }, 1500);
 
-        document.getElementById('stageInputNode').addEventListener('keydown', function(e) {
-            if(e.key === 'Enter') { e.preventDefault(); executeSendPayload(); }
-        });
-
-        refreshHomeActiveFriendsListRows(globalOnlineUsers);
-        initAgoraAudioEngine();
+        document.getElementById('stageInputNode').addEventListener('keydown', function(e) { if(e.key === 'Enter') { e.preventDefault(); executeSendPayload(); } });
+        refreshHomeActiveFriendsListRows(globalOnlineUsers); initAgoraAudioEngine();
     }
 
     function refreshHomeActiveFriendsListRows(usersObj) {
         const list = document.getElementById('homeActiveFriendsList'); if(!list) return;
         list.innerHTML = '';
         Object.keys(usersObj).forEach(username => {
-            if(username === myName) return;
-            const uData = usersObj[username];
+            if(username === myName) return; const uData = usersObj[username];
             let avHtml = uData.avatar ? `<img src="${uData.avatar}">` : `🛸`;
-            let safeName = escapeHtml(username);
-            let safeStatus = escapeHtml(uData.statusMsg || '● 在线联线中');
-            
+            let safeName = escapeHtml(username); let safeStatus = escapeHtml(uData.statusMsg || '● 在线联线中');
             list.innerHTML += `
-                <div class="seat-row-item" onclick="openVoiceRoomStage('private', '${safeName}')">
+                <div class="seat-row-item" onclick="switchTabSelector(1); openVoiceRoomStage('private', '${safeName}')">
                     <div class="seat-pop-txt" id="home_pop_${safeName}">Poked!</div>
                     <div class="seat-left-info">
                         <div class="seat-avatar-container">${avHtml}</div>
@@ -597,12 +573,10 @@
         const box = document.getElementById('privatePortalList'); if(!box) return;
         box.innerHTML = '';
         Object.keys(privateUnreadRegistry).forEach(peer => {
-            const count = privateUnreadRegistry[peer] || 0;
-            const cache = globalOnlineUsers[peer] || { avatar: "" };
+            const count = privateUnreadRegistry[peer] || 0; const cache = globalOnlineUsers[peer] || { avatar: "" };
             let avHtml = cache.avatar ? `<img src="${cache.avatar}">` : `👤`;
             let badgeHtml = count > 0 ? `<div class="portal-badge-right">${count}</div>` : `<span style="font-size:11px;color:#ccc;">已读</span>`;
             let safePeer = escapeHtml(peer);
-            
             box.innerHTML += `
                 <div class="chat-portal-row" onclick="openVoiceRoomStage('private', '${safePeer}')">
                     <div class="portal-left">
@@ -651,7 +625,8 @@
     }
 
     async function toggleMicHardwareState() {
-        if(!agoraClient || activeChatScope !== 'group') return;
+        if(!agoraClient) return;
+        if(activeChatScope !== 'group') { alert("私信通道不支持开启公网连麦语音舱哦。"); return; }
         if(agoraClient.connectionState !== "CONNECTED") { alert("音频网络正在加急握手，请稍等1秒点我..."); return; }
         isMuted = !isMuted;
         const dot = document.getElementById('islandIndicator'), txt = document.getElementById('islandStatusText'), stageMic = document.getElementById('stageMicText');
@@ -659,8 +634,8 @@
             if(!localAudioTrack) { localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ AEC: true, ANS: true, AGC: true, audioSampleRate: 48000 }); await agoraClient.publish([localAudioTrack]); }
             await localAudioTrack.setEnabled(!isMuted);
             dot.className = isMuted ? "island-indicator" : "island-indicator active"; txt.innerText = isMuted ? "点击灵动岛上麦 🔇" : "正在连麦通话中 🎙️";
-            if(stageMic) { stageMic.innerText = isMuted ? "说话" : "🛑 闭麦"; stageMic.style.color = isMuted ? "var(--line-green)" : "var(--neon-pink)"; }
-            if(!isMuted) { let gain = document.getElementById('micSlider').value; localAudioTrack.setVolume(parseInt(gain)); }
+            if(stageMic) { stageMic.innerText = isMuted ? "上麦发言" : "🛑 下麦"; stageMic.style.color = isMuted ? "var(--line-green)" : "var(--neon-pink)"; }
+            if(!isMuted) { let gain = document.getElementById('micSlider').value; localAudioTrack.setVolume(parseInt(val)); }
             sendSocketJson({ type: 'mic_sync', user: myName, isMuted: isMuted });
         } catch (err) { isMuted = true; dot.className = "island-indicator"; txt.innerText = "点击灵动岛上麦 🔇"; alert("麦克风启动受阻，请确认允许麦克风录音授权！"); }
     }
@@ -691,12 +666,8 @@
         
         sendSocketJson({ type: 'sticker', sender: myName, avatar: myAvatarBase64, payload: emojiChar });
         appendChatBubbleNode(myName, myAvatarBase64, emojiChar, false, false, true); 
-        
         if (isBot) {
-            setTimeout(() => {
-                appendChatBubbleNode(activePrivateTargetPeer, "", "🍬 收到大贴图应援！图片和文本现在绝对秒发不卡死！(已读标记)", false, false, false);
-                playSynthTone('ping');
-            }, 1000);
+            setTimeout(() => { appendChatBubbleNode(activePrivateTargetPeer, "", "🍬 收到大表情应援！(已读标记)", false, false, false); playSynthTone('ping'); }, 1000);
         }
     }
 
@@ -704,10 +675,7 @@
         const node = document.getElementById('stageInputNode'); if(!node) return;
         const text = node.value.trim(); if(!text) return;
         const isBot = activePrivateTargetPeer && activePrivateTargetPeer.includes("(Bot)");
-
-        if (!isBot && (!mqttClient || !mqttClient.connected)) { 
-            alert("⚠️ 网络信道未就绪，正在努力重新握手网关中..."); return; 
-        }
+        if (!isBot && (!mqttClient || !mqttClient.connected)) { alert("⚠️ 网络信道未就绪..."); return; }
 
         if (activeChatScope === 'group') {
             sendSocketJson({ type: 'group_chat', sender: myName, avatar: myAvatarBase64, payload: text });
@@ -716,18 +684,15 @@
             sendSocketJson({ type: 'private_chat', sender: myName, target: activePrivateTargetPeer, avatar: myAvatarBase64, payload: text, burn: isPrivateBurnActive() });
             appendChatBubbleNode(myName, myAvatarBase64, text, false, isPrivateBurnActive(), false);
             if(!privateUnreadRegistry[activePrivateTargetPeer]) { privateUnreadRegistry[activePrivateTargetPeer] = 0; rebuildPrivateSessionPortalRows(); }
-            
             if (isBot) {
                 setTimeout(() => {
                     let replies = [
-                        "太棒了！底层 input.value 干扰已被剔除，图片和文字再也不会卡死了！💖",
-                        "（转圈圈）全新国旗大贴图舱顺利合并！这套防截断壁纸太美了！✨",
-                        "现在打字发图秒回显！滚屏崩溃漏洞也彻底修复啦！🛸",
-                        "看得到你发的文字啦！大表情和高拟真对流状态全都刷新好了！🍭"
+                        "太棒了！底栏死锁和返回自动退麦漏洞已全线修复通车！💖",
+                        "（转圈圈）現在即便退回主頁，後台語音依然會完美保留暢連哦！✨",
+                        "打字和發圖現已100%全端秒回顯，快叫上小夥伴試試看吧！🍭"
                     ];
                     let r = replies[Math.floor(Math.random() * replies.length)];
-                    appendChatBubbleNode(activePrivateTargetPeer, "", r, false, isPrivateBurnActive(), false); 
-                    playSynthTone('ping');
+                    appendChatBubbleNode(activePrivateTargetPeer, "", r, false, isPrivateBurnActive(), false); playSynthTone('ping');
                 }, 1000);
             }
         }
@@ -737,22 +702,17 @@
 
     function appendChatBubbleNode(sender, avB64, content, isImg, isBurnType, isSticker) {
         const scroller = document.getElementById('stageScroller'); if(!scroller) return;
-        const isSelf = sender === myName;
-        
-        const combo = document.createElement('div'); 
+        const isSelf = sender === myName; const combo = document.createElement('div'); 
         combo.className = `bubble-combo ${isSelf ? 'self' : 'other'} ${isBurnType ? 'burn-mode' : ''}`;
         
         if(!isSelf) {
             let avHtml = avB64 ? `<img class="bubble-avatar-img" src="${avB64}">` : `<div class="bubble-avatar-img" style="background:#e8edf0; text-align:center;line-height:34px;font-size:18px;">🛸</div>`;
             combo.insertAdjacentHTML('beforeend', avHtml);
         }
-
         const coreWrap = document.createElement('div'); coreWrap.className = 'bubble-core-wrap'; 
         if(!isSelf) { coreWrap.insertAdjacentHTML('beforeend', `<span class="bubble-core-name">${escapeHtml(sender)}</span>`); }
 
-        const body = document.createElement('div'); 
-        body.className = `bubble-body ${isSticker ? 'line-big-sticker-node' : ''}`;
-        
+        const body = document.createElement('div'); body.className = `bubble-body ${isSticker ? 'line-big-sticker-node' : ''}`;
         if (isBurnType) {
             body.innerHTML = `⚠️ 阅后即焚悄悄话 (点击查看)`;
             body.onclick = function() { 
@@ -762,30 +722,19 @@
                 setTimeout(() => { combo.remove(); }, 6000); 
             };
         } else {
-            if(isImg) {
-                const img = document.createElement('img'); img.className = 'chat-raw-img'; img.src = content; img.onclick = () => openSandbox(content);
-                body.appendChild(img);
-            } else if(isSticker) { body.textContent = content; }
+            if(isImg) { const img = document.createElement('img'); img.className = 'chat-raw-img'; img.src = content; img.onclick = () => openSandbox(content); body.appendChild(img); }
+            else if(isSticker) { body.textContent = content; }
             else { body.textContent = content; }
         }
         coreWrap.appendChild(body);
 
         const d = new Date(); const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
         const metaHtml = `<span class="bubble-timestamp">${isSelf ? '<b class="line-read-badge">已讀</b>'+timeStr : timeStr}</span>`;
-        
-        if(isSelf) {
-            combo.insertAdjacentHTML('beforeend', metaHtml); 
-            combo.appendChild(coreWrap); 
-        } else {
-            combo.appendChild(coreWrap);
-            combo.insertAdjacentHTML('beforeend', metaHtml);
-        }
-        
-        scroller.appendChild(combo); 
-        scroller.scrollTop = scroller.scrollHeight; 
+        if(isSelf) { combo.insertAdjacentHTML('beforeend', metaHtml); combo.appendChild(coreWrap); }
+        else { combo.appendChild(coreWrap); combo.insertAdjacentHTML('beforeend', metaHtml); }
+        scroller.appendChild(combo); scroller.scrollTop = scroller.scrollHeight; 
     }
 
-    // Keep Memo
     function executeSaveKeepMemo() {
         const input = document.getElementById('keepMemoInput'); if(!input) return;
         const txt = input.value.trim(); if(!txt) return;
@@ -795,18 +744,10 @@
         input.value = ''; renderLocalKeepMemosList();
     }
     function renderLocalKeepMemosList() {
-        const box = document.getElementById('keepMemoScrollerBox'); if(!box) return;
-        box.innerHTML = '';
+        const box = document.getElementById('keepMemoScrollerBox'); if(!box) return; box.innerHTML = '';
         let pool = JSON.parse(localStorage.getItem('line_keep_memo_pool') || '[]');
         if(pool.length === 0) { box.innerHTML = `<p style="font-size:11px;color:#999;text-align:center;padding:15px;">暂无本地 Keep 随笔记录归档</p>`; return; }
-        pool.forEach(item => {
-            box.innerHTML += `
-                <div class="keep-entry-node">
-                    <div><b>${escapeHtml(item.text)}</b></div>
-                    <div style="font-size:9px;color:#a2aeb5;margin-top:4px;">⏱️ 存入快照: ${item.stamp}</div>
-                </div>
-            `;
-        });
+        pool.forEach(item => { box.innerHTML += `<div class="keep-entry-node"><div><b>${escapeHtml(item.text)}</b></div><div style="font-size:9px;color:#a2aeb5;margin-top:4px;">⏱️ 快照: ${item.stamp}</div></div>`; });
     }
     function clearAllKeepMemos() { localStorage.removeItem('line_keep_memo_pool'); renderLocalKeepMemosList(); }
     function appendScRedBillboard(sender, amt) { const scroller = document.getElementById('stageScroller'); if(!scroller) return; const node = document.createElement('div'); node.className = 'sc-billboard-msg'; node.innerText = `💸 SuperChat：[${escapeHtml(sender)}] 爆赞赤字 ￥${amt}元！`; scroller.appendChild(node); scroller.scrollTop = scroller.scrollHeight; }
