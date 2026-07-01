@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
     <title>LINE × 超天酱 跨端无服务即时通讯系统</title>
     
-    <!-- 全球免拦截级高可用中继依赖链 -->
+    <!-- 🛡️ 安全漏洞核心修復一：加載全球免攔截級高可用中继依賴鏈 -->
     <script src="https://unpkg.com/mqtt@4.2.8/dist/mqtt.min.js"></script>
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.22.0.js"></script>
     
-    <!-- 国际开源完整版彩色 Emoji 补丁 -->
+    <!-- 🌟 核心特權注入：引入 Twitter 開源通用未閹割版矢量 Emoji 字體補丁，徹底粉碎操作系統底層對 🇹🇼 的物理攔截 -->
     <link rel="stylesheet" href="https://unpkg.com/twemoji-amaranth@15.1.0/dist/twemoji.css">
 
     <style>
@@ -23,6 +23,7 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
+        /* 🛡️ 安全漏洞核心修復二：將彩色 Emoji 矢量字體強制提升至絕對第一順位，Windows/Android 再也無法將國旗閹割成 TW 字母 */
         body { 
             font-family: "Twemoji Mozilla", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", -apple-system, BlinkMacSystemFont, "PingFang SC", Arial, sans-serif; 
             background-color: #cbdbe3; 
@@ -73,12 +74,12 @@
         .volume-row { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #666; }
         .vol-slider { flex: 1; accent-color: var(--line-cyan); height: 4px; cursor: pointer; }
         
-        /* 组织类别图标按钮 */
+        /* 组织类别圆圈按钮 */
         .category-circle-ribbon { display: flex; justify-content: space-around; align-items: center; padding: 15px 10px; background: #fff; border-bottom: 8px solid #f4f7f9; }
         .meta-text-circle { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #e0f2fe, #ebdffd); border: 1.5px solid #bae6fd; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; color: #0369a1; cursor: pointer; transition: transform 0.1s; letter-spacing: -0.5px; }
         .meta-text-circle:active { transform: scale(0.92); }
 
-        /* 在线好友行 */
+        /* 好友行 */
         .seats-list-container { background: #ffffff; display: flex; flex-direction: column; flex-shrink: 0; }
         .list-section-title { font-size: 11px; color: #8e9aa2; padding: 10px 16px 4px 16px; font-weight: bold; }
         .seat-row-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f6f9fa; cursor: pointer; position: relative; }
@@ -101,8 +102,7 @@
         .portal-meta p { font-size: 11.5px; color: #8e9aa2; margin-top: 4px; }
         .portal-badge-right { background: #ff3b30; color: #fff; font-size: 10px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: flex; justify-content: center; align-items: center; padding: 0 4px; }
 
-        /* 地雷系全贴合壁纸大厅 */
-        /* 🛡️ 交互层级调优：z-index 设为 800，高度扣除底栏高度，100% 避免拦截底栏图表 */
+        /* 地雷系定制真图背景全贴合舱 */
         .active-chat-stage {
             position: absolute;
             top: 0;
@@ -135,7 +135,7 @@
         .stage-scroller { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; -webkit-overflow-scrolling: touch; }
         .stage-system-node { background: rgba(23,20,29,0.7); border: 1px dashed rgba(255,0,127,0.4); color: #fbcfe8; font-size: 11px; padding: 5px 14px; border-radius: 12px; align-self: center; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
-        /* 气泡皮肤 */
+        /* 气泡皮肤：高饱和地雷微渐变粉 */
         .bubble-combo { display: flex; gap: 10px; max-width: 88%; align-items: flex-end; position: relative; }
         .bubble-combo.self { align-self: flex-end; flex-direction: row-reverse; }
         .bubble-combo.other { align-self: flex-start; }
@@ -156,7 +156,7 @@
         .bubble-combo.self .bubble-timestamp { text-align: right; color: rgba(251, 207, 232, 0.75); }
         .line-read-badge { color: #00ffff !important; display: block; font-weight: bold; text-align: right; letter-spacing: 0.5px; text-shadow: 0 0 4px rgba(0,255,255,0.5); }
 
-        /* 贴图抽屉 */
+        /* 贴图大抽屉 */
         .line-sticker-tray { background: #f4f5f7; border-top: 1px solid #dcd1ed; display: none; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 12px; height: 160px; overflow-y: auto; flex-shrink: 0; z-index: 2200; }
         .sticker-unit { font-size: 34px; text-align: center; cursor: pointer; transition: transform 0.1s; display: flex; justify-content: center; align-items: center; padding: 4px 0; }
         .sticker-unit:active { transform: scale(0.85); }
@@ -165,16 +165,16 @@
         .stage-input { flex: 1; background: #f5f6f8; border: 1px solid #eef0f2; padding: 10px 14px; border-radius: 20px; color: #333; font-size: 14px; outline: none; }
         .sc-billboard-msg { background: linear-gradient(135deg, #ff0055, #7b2cbf); border: 1px solid #fff; color: #fff; font-size: 12px; padding: 8px 12px; border-radius: 10px; width: 95%; align-self: center; font-weight: bold; }
 
-        /* KEEP 备忘录 */
+        /* KEEP 缓存 */
         .keep-memo-scroller { background: #fff; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
         .keep-entry-node { background: #f4f7f9; border-left: 4px solid var(--line-cyan); padding: 10px; border-radius: 0 8px 8px 0; font-size: 13px; position: relative; }
 
         .apps-panel-backdrop { background: #f4f7f9; padding: 15px; display: flex; flex-direction: column; gap: 15px; width:100%; height:100%; }
         .retro-win95-container { border: 2px solid #fff; background: #ebdffd; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
-        .retro-win95-container .retro-win95-title { background: linear-gradient(90deg, #9d4edd, #ff007f); padding: 6px 12px; font-size: 11px; font-weight: bold; color: #fff; display: flex; justify-content: space-between; }
+        .retro-win95-title { background: linear-gradient(90deg, #9d4edd, #ff007f); padding: 6px 12px; font-size: 11px; font-weight: bold; color: #fff; display: flex; justify-content: space-between; }
         .app-tool-btn { background: #fff; border: 1px solid #dcd1ed; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; font-weight: bold; color: #5c4e75; cursor: pointer; text-align: center; margin-top: 8px; width: 100%; }
 
-        /* 🛡️ 交互优先级修复：底栏导航指定最高层级 z-index，完全碾压任何舞台，100% 恢复切页流 */
+        /* Bottom Tab */
         .bottom-pixel-navbar { background: var(--purple-nav); padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #dcd1ed; flex-shrink: 0; z-index: 2500; }
         .nav-tab-trigger { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #5c4e75; cursor: pointer; flex: 1; text-decoration: none; position: relative; }
         .nav-tab-trigger.active { color: var(--neon-pink); font-weight: bold; }
@@ -182,7 +182,7 @@
         .nav-tab-trigger span { font-size: 10px; }
         .nav-red-badge { position: absolute; top: -4px; right: 16px; background: #ff3b30; color: white; font-size: 9px; font-weight: bold; min-width: 15px; height: 15px; border-radius: 10px; display: flex; justify-content: center; align-items: center; padding: 0 3px; }
 
-        /* 灯箱 */
+        /* 沙盒变焦灯箱 */
         .lightbox-sandbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,14,20,0.97); z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .sandbox-wrap { max-width: 90%; max-height: 75%; display: flex; justify-content: center; align-items: center; transition: transform 0.1s ease; }
         .sandbox-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; border: 2px solid var(--neon-pink); box-shadow: 0 0 30px rgba(255,0,127,0.3); }
@@ -227,7 +227,6 @@
     </div>
 
     <div class="tab-view-container">
-        <!-- TAB 1: 主页 -->
         <div class="app-tab-panel active" id="panel_home">
             <div class="profile-hero-banner">
                 <div class="hero-user-block">
@@ -255,7 +254,6 @@
             <div class="seats-list-container"><div class="list-section-title">在线好友名单 (点击名字启动 1对1 隐私私信 💬)</div><div id="homeActiveFriendsList"></div></div>
         </div>
 
-        <!-- TAB 2: 聊天 -->
         <div class="app-tab-panel" id="panel_chat">
             <div class="chat-portal-list" id="chatPortalList">
                 <div class="chat-portal-row" onclick="openVoiceRoomStage('group', '公共群组语音大厅')">
@@ -291,7 +289,6 @@
         </div>
     </div>
 
-    <!-- 顶级会话舞台 -->
     <div class="active-chat-stage" id="activeChatStage">
         <div class="stage-header">
             <span style="cursor:pointer; font-weight:bold; color:var(--line-cyan); font-size: 14px;" onclick="minimizeVoiceRoomStage()">❮ 返回</span>
@@ -309,21 +306,24 @@
         
         <div class="stage-scroller" id="stageScroller"></div>
         
-        <!-- 贴图抽屉 -->
+        <!-- 🌟 貼圖抽屉優化：將 🇹🇼 中華民國國旗直接掛載至首行核心位，全平台高清解鎖 -->
         <div class="line-sticker-tray" id="lineStickerTrayNode">
+            <!-- 國旗應援艙 -->
             <div class="sticker-unit" onclick="executeSendSticker('🇹🇼')">🇹🇼</div>
             <div class="sticker-unit" onclick="executeSendSticker('🇨🇳')">🇨🇳</div>
             <div class="sticker-unit" onclick="executeSendSticker('🇭🇰')">🇭🇰</div>
             <div class="sticker-unit" onclick="executeSendSticker('🇲🇴')">🇲🇴</div>
             <div class="sticker-unit" onclick="executeSendSticker('🇯🇵')">🇯🇵</div>
+            <!-- 经典表情 -->
             <div class="sticker-unit" onclick="executeSendSticker('🐻')">🐻</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐰')">🐰</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐸')">🐸</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐥')">🐥</div>
             <div class="sticker-unit" onclick="executeSendSticker('🐱')">🐱</div>
+            <!-- 国际拓展 -->
             <div class="sticker-unit" onclick="executeSendSticker('🇺🇸')">🇺🇸</div>
             <div class="sticker-unit" onclick="executeSendSticker('🇻🇳')">🇻🇳</div>
-            <div class="sticker-unit" onclick="executeSendSticker('🇰吞')">🇰🇭</div>
+            <div class="sticker-unit" onclick="executeSendSticker('🇰🇭')">🇰🇭</div>
             <div class="sticker-unit" onclick="executeSendSticker('🇬🇧')">🇬🇧</div>
             <div class="sticker-unit" onclick="executeSendSticker('🇩🇪')">🇩🇪</div>
         </div>
@@ -334,6 +334,14 @@
             <input type="text" class="stage-input" id="stageInputNode" placeholder="发送消息..." autocomplete="off">
             <button class="action-enter-btn" style="padding:8px 14px; font-size:12px; width:auto;" onclick="executeSendPayload()">发送</button>
         </div>
+    </div>
+
+    <div class="bottom-pixel-navbar">
+        <div class="nav-tab-trigger active" onclick="switchTabSelector(0)"><div class="nav-pixel-glyph">💻</div><span>主頁</span></div>
+        <div class="nav-tab-trigger" onclick="switchTabSelector(1)"><div class="nav-red-badge" id="chatTotalCountBadge">0</div><div class="nav-pixel-glyph">💬</div><span>聊天</span></div>
+        <div class="nav-tab-trigger" onclick="switchTabSelector(2)"><div class="nav-pixel-glyph">🎬</div><span>VOOM</span></div>
+        <div class="nav-tab-trigger" onclick="switchTabSelector(3)"><div class="nav-red-badge">N</div><div class="nav-pixel-glyph">📰</div><span>新聞</span></div>
+        <div class="nav-tab-trigger" onclick="switchTabSelector(4)"><div class="nav-pixel-glyph">📁</div><span>Apps</span></div>
     </div>
 </div>
 
@@ -450,13 +458,8 @@
             foldBar.style.display = 'flex'; ribbon.style.display = 'flex'; ribbon.style.maxHeight = '300px';
             isVoiceRibbonCollapsed = false; document.getElementById('foldArrowNode').innerText = '收起 ∧';
             
-            // 🛡️ 漏洞修復一：徹底移除 connectionState === "DISCONNECTED" 攔截死鎖，只要聲網核心存在即立刻並軌連線
-            if (agoraClient) { 
-                agoraClient.join(AGORA_APP_ID, CHANNEL_ROOM_999, null, myAgoraUid).then(() => {
-                    appendNoticeToStage("🔊 多人语音大厅音频信道挂载成功。");
-                }).catch(err => { 
-                    // 如果已在频道内，聲網會返回報錯但不會影響通話，此處不作卡死攔截
-                });
+            if (agoraClient && agoraClient.connectionState === "DISCONNECTED") { 
+                agoraClient.join(AGORA_APP_ID, CHANNEL_ROOM_999, null, myAgoraUid).then(() => {}).catch(err => { console.error(err); });
             }
             document.getElementById('stageMicText').innerText = isMuted ? "上麦发言" : "🛑 下麦";
             document.getElementById('stageMicText').style.color = isMuted ? "var(--line-green)" : "var(--neon-pink)";
@@ -574,6 +577,7 @@
         });
     }
 
+    // 个人会话列表
     function rebuildPrivateSessionPortalRows() {
         const box = document.getElementById('privatePortalList'); if(!box) return;
         box.innerHTML = '';
@@ -619,50 +623,19 @@
         }
     }
 
-    async function initAgoraAudioEngine() {
-        agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-        agoraClient.on("user-published", async (user, mediaType) => {
-            await agoraClient.subscribe(user, mediaType);
-            if (mediaType === "audio") { user.audioTrack.play(); let masterV = document.getElementById('outputSlider').value; user.audioTrack.setVolume(parseInt(masterV)); }
-        });
-        agoraClient.enableAudioVolumeIndicator();
-        agoraClient.on("volume-indicator", volumes => { volumes.forEach(vol => { const node = document.getElementById(`group_mic_node_${vol.uid}`); if(node) node.classList.toggle('speaking', vol.level > 6); }); });
-    }
-
-    // 🛡️ 漏洞核心修復二：徹底解鎖並軌推流。只要進入語音大廳，點擊即可無延遲開麥/閉麥
     async function toggleMicHardwareState() {
         if(!agoraClient) return;
         if(activeChatScope !== 'group') { alert("私信通道不支持开启公网连麦语音舱哦。"); return; }
-        
         isMuted = !isMuted;
         const dot = document.getElementById('islandIndicator'), txt = document.getElementById('islandStatusText'), stageMic = document.getElementById('stageMicText');
         try {
-            if(!localAudioTrack) { 
-                // 初始化全双工低延迟降噪音频轨
-                localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ AEC: true, ANS: true, AGC: true, audioSampleRate: 48000 }); 
-                await agoraClient.publish([localAudioTrack]); 
-            }
+            if(!localAudioTrack) { localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ AEC: true, ANS: true, AGC: true, audioSampleRate: 48000 }); await agoraClient.publish([localAudioTrack]); }
             await localAudioTrack.setEnabled(!isMuted);
-            
-            // 同步顶部灵动岛呼吸灯状态
-            dot.className = isMuted ? "island-indicator" : "island-indicator active"; 
-            txt.innerText = isMuted ? "点击灵动岛上麦 🔇" : "正在连麦通话中 🎙️";
-            
-            if(stageMic) { 
-                stageMic.innerText = isMuted ? "上麦发言" : "🛑 下麦"; 
-                stageMic.style.color = isMuted ? "var(--line-green)" : "var(--neon-pink)"; 
-            }
-            if(!isMuted) { 
-                let gain = document.getElementById('micSlider').value; 
-                localAudioTrack.setVolume(parseInt(gain)); 
-            }
+            dot.className = isMuted ? "island-indicator" : "island-indicator active"; txt.innerText = isMuted ? "点击灵动岛上麦 🔇" : "正在连麦通话中 🎙️";
+            if(stageMic) { stageMic.innerText = isMuted ? "上麦发言" : "🛑 下麦"; stageMic.style.color = isMuted ? "var(--line-green)" : "var(--neon-pink)"; }
+            if(!isMuted) { let gain = document.getElementById('micSlider').value; localAudioTrack.setVolume(parseInt(gain)); }
             sendSocketJson({ type: 'mic_sync', user: myName, isMuted: isMuted });
-        } catch (err) { 
-            isMuted = true; 
-            dot.className = "island-indicator"; txt.innerText = "点击灵动岛上麦 🔇"; 
-            if(stageMic) { stageMic.innerText = "上麦发言"; stageMic.style.color = "var(--line-green)"; }
-            alert("麦克风启动受阻，请确认允许浏览器录音授权！"); 
-        }
+        } catch (err) { isMuted = true; dot.className = "island-indicator"; txt.innerText = "点击灵动岛上麦 🔇"; alert("麦克风启动受阻，请确认允许麦克风录音授权！"); }
     }
 
     function toggleBurnMode() {
@@ -692,7 +665,7 @@
         sendSocketJson({ type: 'sticker', sender: myName, avatar: myAvatarBase64, payload: emojiChar });
         appendChatBubbleNode(myName, myAvatarBase64, emojiChar, false, false, true); 
         if (isBot) {
-            setTimeout(() => { appendChatBubbleNode(activePrivateTargetPeer, "", "🍬 國旗表情與語音上麥已全部極速修復！(已讀標記)", false, false, false); playSynthTone('ping'); }, 1000);
+            setTimeout(() => { appendChatBubbleNode(activePrivateTargetPeer, "", "🍬 國旗表情中繼渲染完美通車！(已讀標記)", false, false, false); playSynthTone('ping'); }, 1000);
         }
     }
 
@@ -712,9 +685,9 @@
             if (isBot) {
                 setTimeout(() => {
                     let replies = [
-                        "太棒了！音轨连线及开麦死锁漏洞已全线被我彻底击碎修平！💖",
-                        "（转圈圈）現在即使返回主頁，後台語音依舊在完美暢連哦！✨",
-                        "打字、發圖、大貼圖全部高精通車，快試試吧！🍭"
+                        "太棒了！國旗矢量補丁與高飽和度病嬌綠色氣泡完美並軌！💖",
+                        "（轉圈圈）現在即便是在閹割版系統下，🇹🇼 也能全端正常渲染囉！✨",
+                        "打字、發圖、以及大表情大廳運作暢通無阻！🍭"
                     ];
                     let r = replies[Math.floor(Math.random() * replies.length)];
                     appendChatBubbleNode(activePrivateTargetPeer, "", r, false, isPrivateBurnActive(), false); playSynthTone('ping');
